@@ -43,7 +43,23 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onRate }) => 
 
     const cleanText = message.text.replace(/[*#_`~]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
+    
+    // Detect Arabic text and set appropriate speech synthesis language and voice
+    const isArabicText = /[\u0600-\u06FF]/.test(cleanText);
+    utterance.lang = isArabicText ? 'ar-SA' : 'en-US';
+
+    if ('speechSynthesis' in window) {
+      const voices = window.speechSynthesis.getVoices();
+      if (isArabicText) {
+        const arVoice = voices.find((v) => v.lang.startsWith('ar'));
+        if (arVoice) utterance.voice = arVoice;
+      } else {
+        const enVoice = voices.find((v) => v.lang.startsWith('en'));
+        if (enVoice) utterance.voice = enVoice;
+      }
+    }
+
+    utterance.rate = 0.95;
     utterance.pitch = 1.0;
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);

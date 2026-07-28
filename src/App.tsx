@@ -11,7 +11,9 @@ import {
   Camera,
   RefreshCw,
   Paperclip,
-  X
+  X,
+  Mic,
+  MicOff
 } from 'lucide-react';
 
 export default function App() {
@@ -61,8 +63,68 @@ How can I help you today? You can ask me about:
   const [isLoading, setIsLoading] = useState(false);
   const [isPillModalOpen, setIsPillModalOpen] = useState(false);
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const toggleSpeechToText = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionClass) {
+      alert(
+        language === 'ar'
+          ? 'خاصية الإملاء الصوتي غير مدعومة مباشرة في هذا المتصفح. يرجى تجربة متصفح Chrome أو Edge.'
+          : 'Voice speech recognition is not supported in this browser. Please try Chrome or Edge.'
+      );
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognitionClass();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      // Set recognition language specifically for Arabic or English
+      recognition.lang = language === 'ar' ? 'ar-SA' : 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          setInput(transcript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+      setIsListening(false);
+    }
+  };
 
   // Sync language state to local storage
   useEffect(() => {
@@ -343,14 +405,53 @@ How can I help you today? You can ask me about:
 
           {/* Chat Input Bar */}
           <div className="p-3 sm:p-4 bg-slate-50 border-t border-slate-200">
+            {/* Recording active badge */}
+            {isListening && (
+              <div className="mb-2 px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold flex items-center justify-between animate-pulse">
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
+                  <span>
+                    {isAr
+                      ? '🎙️ جاري الاستماع للإملاء الصوتي باللغة العربية... انطق سؤالك الآن'
+                      : '🎙️ Listening to voice dictation in English... Speak your question now'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleSpeechToText}
+                  className="text-[11px] underline text-rose-800 font-semibold"
+                >
+                  {isAr ? 'إيقاف التسجيل' : 'Stop'}
+                </button>
+              </div>
+            )}
+
             {/* Input + Action buttons */}
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <button
+                type="button"
                 onClick={() => setIsPillModalOpen(true)}
                 className="p-3 text-teal-700 bg-white border border-slate-200 hover:border-teal-400 hover:bg-teal-50 rounded-2xl transition"
                 title={isAr ? 'رفع صورة قرص دواء' : 'Upload pill photo'}
               >
                 <Paperclip className="w-5 h-5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleSpeechToText}
+                className={`p-3 rounded-2xl transition border flex items-center justify-center shrink-0 ${
+                  isListening
+                    ? 'bg-rose-500 text-white border-rose-600 ring-4 ring-rose-200 shadow-md'
+                    : 'bg-white text-teal-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50'
+                }`}
+                title={
+                  isListening
+                    ? (isAr ? 'إيقاف الإملاء الصوتي' : 'Stop voice recording')
+                    : (isAr ? 'الإملاء الصوتي (بالعربية / الإنجليزية)' : 'Voice input dictation (Arabic / English)')
+                }
+              >
+                {isListening ? <MicOff className="w-5 h-5 animate-spin" /> : <Mic className="w-5 h-5" />}
               </button>
 
               <input
@@ -359,14 +460,17 @@ How can I help you today? You can ask me about:
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
                 placeholder={
-                  isAr
-                    ? 'اسأل MediBot عن أي دواء، جرعة، آثار جانبية، أو تداخلات دوائية...'
-                    : 'Ask MediBot about any medication, dosage, side effects, or safety precautions...'
+                  isListening
+                    ? (isAr ? 'جاري تحويل صوتك إلى نص...' : 'Converting speech to text...')
+                    : (isAr
+                      ? 'اسأل MediBot عن أي دواء، أو انقر على المايك للإملاء الصوتي...'
+                      : 'Ask MediBot or click the mic for voice dictation...')
                 }
                 className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
               />
 
               <button
+                type="button"
                 onClick={() => handleSendMessage()}
                 disabled={isLoading || (!input.trim() && !imageAttachment)}
                 className={`px-5 py-3 rounded-2xl font-extrabold text-sm flex items-center space-x-2 rtl:space-x-reverse transition shadow-xs ${
