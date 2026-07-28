@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { ChatMessage } from './components/ChatMessage';
 import { PillScannerModal } from './components/PillScannerModal';
 import { SafetyDisclaimerModal } from './components/SafetyDisclaimerModal';
+import { getOfflineClinicalResponse } from './data/clinicalEngine';
 import {
   Send,
   Pill,
@@ -122,46 +123,35 @@ How can I help you today? You can ask me about:
       } catch {
         console.warn('Received non-JSON response from /api/chat server, activating clinical fallback');
         data = {
-          text: isAr
-            ? '⚠️ **تنبيه خادم الاستشارة الطبية:** الخادم مشغول حالياً. يرجى الانتظار بضع ثوانٍ ثم إعادة المحاولة.'
-            : '⚠️ **MediBot Notice:** The clinical AI service is momentarily busy. Please wait a few seconds and try sending your query again.',
+          text: getOfflineClinicalResponse(queryText, language, 'chat'),
           groundingSources: [],
         };
       }
 
-      if (!response.ok && data.error) {
+      if (!response.ok && data?.error) {
         throw new Error(data.error);
       }
+
+      const replyText = data?.text || getOfflineClinicalResponse(queryText, language, 'chat');
 
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         sender: 'bot',
-        text: data.text || (isAr ? 'لم أتمكن من الحصول على إجابة. يرجى المحاولة مرة أخرى.' : 'No response text received.'),
+        text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        groundingSources: data.groundingSources,
+        groundingSources: data?.groundingSources || [],
         mode: 'chat',
       };
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error: any) {
       console.error('Error sending message:', error);
-      let errorText = error?.message || '';
-      
-      // Clean up raw JSON error dumps (e.g. 429 quota error strings)
-      if (errorText.includes('429') || errorText.includes('RESOURCE_EXHAUSTED') || errorText.includes('quota')) {
-        errorText = isAr
-          ? '⚠️ **تنبيه:** تم الوصول إلى حد الاستخدام المؤقت بنظام الذكاء الاصطناعي (Error 429). يرجى الانتظار بضع ثوانٍ وإعادة المحاولة.'
-          : '⚠️ **Notice:** Gemini API rate limit reached (Error 429). Please wait a few seconds and try sending your prompt again.';
-      } else {
-        errorText = isAr
-          ? `⚠️ **عذراً، حدث خطأ في الاتصال بالخادم:** ${errorText}`
-          : `⚠️ **Clinical Assistant Error:** ${errorText}`;
-      }
+      const fallbackText = getOfflineClinicalResponse(queryText, language, 'chat');
 
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         sender: 'bot',
-        text: errorText,
+        text: fallbackText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMessage]);

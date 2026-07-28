@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldAlert, Plus, Trash2, AlertOctagon, ArrowRight, RefreshCw, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { getOfflineClinicalResponse } from '../data/clinicalEngine';
 
 interface InteractionCheckerProps {
   onAskMediBot: (prompt: string, mode: 'interaction') => void;
@@ -55,21 +56,24 @@ export const InteractionChecker: React.FC<InteractionCheckerProps> = ({ onAskMed
         data = JSON.parse(responseText);
       } catch {
         data = {
-          text: '⚠️ **MediBot Notice:** The interaction checker engine is temporarily busy. Please try clicking Check Interactions again.',
+          text: getOfflineClinicalResponse(`Check interactions between ${drugs.join(', ')}`, 'en', 'interaction'),
           groundingSources: [],
         };
       }
 
-      if (!response.ok && data.error) {
+      if (!response.ok && data?.error) {
         throw new Error(data.error);
       }
 
       setResult({
-        text: data.text,
-        sources: data.groundingSources,
+        text: data?.text || getOfflineClinicalResponse(`Check interactions between ${drugs.join(', ')}`, 'en', 'interaction'),
+        sources: data?.groundingSources || [],
       });
     } catch (err: any) {
-      setError(err?.message || 'An error occurred during interaction analysis.');
+      setResult({
+        text: getOfflineClinicalResponse(`Check interactions between ${drugs.join(', ')}`, 'en', 'interaction'),
+        sources: [],
+      });
     } finally {
       setIsAnalyzing(false);
     }
