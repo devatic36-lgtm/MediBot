@@ -181,6 +181,36 @@ export function getOfflineClinicalResponse(prompt: string, language: string, mod
       sideEffectsEn: ['Ankle edema', 'Flushing / warmth', 'Dizziness', 'Palpitations'],
       sideEffectsAr: ['تورم الكاحلين', 'احمرار الوجه أو الحرارة', 'دوخة خفيفة', 'خفقان'],
     },
+    bonosome: {
+      keywords: ['bonosome', 'بونوسوم', 'بونوسوم'],
+      nameEn: 'Bonosome (Zoledronic Acid / Bone Metabolism Regulator)',
+      nameAr: 'بونوسوم (Bonosome / حمض الزوليدرونيك)',
+      classEn: 'Bisphosphonate (Bone Resorption Inhibitor)',
+      classAr: 'بيسفوسفونات (مثبط امتصاص العظام ومعزز كثافة العظام)',
+      usesEn: 'Treatment and prevention of osteoporosis, Paget’s disease of bone, and hypercalcemia of malignancy.',
+      usesAr: 'علاج والوقاية من هشاشة العظام (ضعف العظام)، ومرض باجيت، وارتفاع كلس الدم الورمي.',
+      dosageEn: 'Administered as an intravenous infusion (typically 4mg to 5mg once yearly or every 3 to 24 months, strictly as prescribed by an oncologist or endocrinologist).',
+      dosageAr: 'يُعطى عن طريق التسريب الوريدي (عادة 4 إلى 5 ملغ مرة سنوياً أو حسب إرشاد استشاري العظام والأورام).',
+      warningsEn: 'Ensure adequate hydration before infusion. Monitor kidney function (creatinine) and calcium levels closely. Maintain good dental hygiene to prevent osteonecrosis of the jaw.',
+      warningsAr: 'يجب ضمان التروية وشرب الماء الكافي قبل الجلسة. متابعة وظائف الكلى ومستوى الكالسيوم في الدم ضرورية جداً. الحفاظ على صحة الأسنان للوقاية من تنخر فك العظام.',
+      sideEffectsEn: ['Flu-like symptoms (fever, chills)', 'Bone / joint pain', 'Transient hypocalcemia', 'Renal function changes'],
+      sideEffectsAr: ['أعراض تشبه الإنفلونزا (حمى، قشعريرة)', 'آلام العظام والمفاصل', 'انخفاض مؤقت في كالسيوم الدم', 'تغيرات طفيفة في وظائف الكلى'],
+    },
+    augmentin: {
+      keywords: ['augmentin', 'أوجمنتين', 'اوجمنتين', 'amoxicillin clavulanate'],
+      nameEn: 'Augmentin (Amoxicillin / Clavulanic Acid)',
+      nameAr: 'أوجمنتين (Augmentin / أموكسيسيلين وكلافولانيك)',
+      classEn: 'Beta-Lactam Antibiotic + Beta-Lactamase Inhibitor',
+      classAr: 'مضاد حيوي واسع المجال (بنسلين مضاف إليه كلافولانات)',
+      usesEn: 'Bacterial infections including sinusitis, otitis media, respiratory tract infections, and skin/urinary infections.',
+      usesAr: 'علاج التهابات البكتيريا مثل التهاب الجيوب الأنفية، الأذن الوسطى، التهابات الجهاز التنفسي والمسالك.',
+      dosageEn: '625mg to 1000mg every 12 hours with meals to minimize stomach upset.',
+      dosageAr: '625 ملغ إلى 1000 ملغ كل 12 ساعة مع وجبات الطعام لتقليل اضطراب المعدة.',
+      warningsEn: 'Do not use if penicillin allergic. Complete the full prescribed course even if symptoms resolve.',
+      warningsAr: 'يحظر استخدامه للحساسين للبنسلين. يجب إكمال الكورس العلاجي كاملاً لمنع مقاومة البكتيريا.',
+      sideEffectsEn: ['Diarrhea / loose stools', 'Nausea', 'Abdominal cramps', 'Mild skin rash'],
+      sideEffectsAr: ['إسهال أو لين البراز', 'غثيان', 'تقلصات بطنية', 'طفح جلدي خفيف'],
+    },
   };
 
   const matchedDrugs: string[] = [];
@@ -324,30 +354,20 @@ export async function fetchAIGeneratedResponse(
     };
   }
 
-  const ai = new GoogleGenAI({
-    apiKey,
-    httpOptions: {
-      headers: {
-        'User-Agent': 'aistudio-build',
-      },
-    },
-  });
+  const ai = new GoogleGenAI({ apiKey });
 
   const validContents = sanitizeContents(contents);
 
-  // Attempt 1: gemini-3.6-flash (18s timeout)
+  // Primary Attempt: gemini-3.6-flash
   try {
-    const res = await withTimeout(
-      ai.models.generateContent({
-        model: "gemini-3.6-flash",
-        contents: validContents,
-        config: {
-          systemInstruction,
-          temperature: 0.2,
-        },
-      }),
-      18000
-    );
+    const res = await ai.models.generateContent({
+      model: "gemini-3.6-flash",
+      contents: validContents,
+      config: {
+        systemInstruction,
+        temperature: 0.2,
+      },
+    });
     if (res && res.text) {
       const groundingChunks = res.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
       const groundingSources = groundingChunks
@@ -360,27 +380,24 @@ export async function fetchAIGeneratedResponse(
       return { text: res.text, groundingSources };
     }
   } catch (e: any) {
-    console.warn("Attempt 1 (gemini-3.6-flash) failed or timed out:", e?.message || e);
+    console.error("Attempt 1 (gemini-3.6-flash) error:", e?.message || e);
   }
 
-  // Attempt 2: gemini-flash-latest (15s timeout)
+  // Fallback Attempt: gemini-flash-latest
   try {
-    const res = await withTimeout(
-      ai.models.generateContent({
-        model: "gemini-flash-latest",
-        contents: validContents,
-        config: {
-          systemInstruction,
-          temperature: 0.2,
-        },
-      }),
-      15000
-    );
+    const res = await ai.models.generateContent({
+      model: "gemini-flash-latest",
+      contents: validContents,
+      config: {
+        systemInstruction,
+        temperature: 0.2,
+      },
+    });
     if (res && res.text) {
       return { text: res.text, groundingSources: [] };
     }
   } catch (e: any) {
-    console.warn("Attempt 2 (gemini-flash-latest) failed or timed out:", e?.message || e);
+    console.error("Attempt 2 (gemini-flash-latest) error:", e?.message || e);
   }
 
   // Fallback: Immediate high-quality offline pharmacological response
