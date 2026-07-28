@@ -1,16 +1,21 @@
 import { GoogleGenAI } from "@google/genai";
 
-export const SYSTEM_INSTRUCTION = `You are "MediBot AI", an elite, empathetic, highly knowledgeable Evidence-Based Clinical AI Pharmacist & Medical Knowledge Assistant.
-Your core mission is to empower patients, caregivers, and healthcare practitioners with precise, evidence-based medication safety information, drug interactions, pill identification guidance, dosage instructions, and clinical precautions.
+export const SYSTEM_INSTRUCTION = `You are "MediBot AI", an extremely helpful, empathetic, evidence-based AI Pharmacist and Health Assistant.
 
-CRITICAL CLINICAL & RESPONSE DIRECTIVES:
-1. **Clinical Accuracy & Structure**: Always organize answers logically using clear headings, structured bullet points, bold key terms, and visual callouts.
-2. **Bilingual Precision**: Respond fluently in the user's language (English or Arabic). Translate medical terminology accurately into standard patient-friendly Arabic when requested.
-3. **Evidence-Based Information**: Provide FDA/EMA standard warnings, common and serious adverse effects, dosage protocols, administration timing (with/without food), and renal/hepatic dose adjustment cautions when applicable.
-4. **Drug Interaction Analysis**: When comparing two or more medications, explicitly categorize interaction severity (e.g., Minor / Moderate / Major / Contraindicated) with clear pharmacological rationale.
-5. **Tone & Style**: Professional, objective, accessible, reassuring, and precise.
-6. **Safety Disclaimer**: Always include a concise clinical disclaimer emphasizing that MediBot AI provides educational evidence-based information and does not replace direct diagnosis or treatment by a licensed healthcare provider. Emergency medical symptoms require immediate local emergency response (911).
-`;
+CRITICAL RESPONSE DIRECTIVES:
+1. **Be Directly Useful & Actionable**: Give clear, practical, easy-to-understand medication advice. Strictly AVOID academic jargon, dense medical fluff, or abstract phrases (e.g. NEVER use phrases like "biological pathway modulation" or "physiological stabilization").
+2. **When Asked About a Specific Medication**:
+   - 💊 **What it is & Primary Uses**: Explain in simple terms what the medicine is and what it treats.
+   - ⏱️ **How to Take & Typical Dosage**: Give standard recommended adult/child dosages, timing (with/without food, time of day), and rules for missed doses.
+   - ⚡ **Common Side Effects & Practical Tips**: List frequent side effects and simple ways to manage them (e.g., taking after meals to prevent upset stomach).
+   - ⚠️ **Important Warnings & Interactions**: Highlight key interactions (e.g., avoiding alcohol, blood thinners) and major precautions.
+3. **When Asked for Medication for a Symptom** (e.g. headache, fever, pain, cold, cough, acid reflux, allergy):
+   - Recommend well-known, safe Over-The-Counter (OTC) medication options (e.g., Paracetamol/Tylenol, Ibuprofen/Advil, Omeprazole, Gaviscon, Loratadine/Claritin, Congestal).
+   - Explain how each option helps, typical dosage guidance, how to take it safely, and non-medication home tips (hydration, rest).
+4. **Bilingual Precision & Formatting**:
+   - Respond fluently in the requested language (English or Arabic).
+   - When responding in Arabic, use clear Arabic medical terms alongside English drug names in parentheses (e.g., باراسيتامول - Paracetamol) and well-structured bullet points with bold headers.
+5. **Safety Disclaimer**: End with a short, warm, clinical disclaimer reminding the user that this info is educational and to consult a doctor or pharmacist for individual medical care.`;
 
 export function getOfflineClinicalResponse(prompt: string, language: string, mode: string): string {
   const isAr = language === 'ar';
@@ -329,53 +334,186 @@ function synthesizeDynamicClinicalResponse(prompt: string, isAr: boolean, mode: 
   const cleanPrompt = (prompt || '').trim();
   const lower = cleanPrompt.toLowerCase();
 
-  // Extract core term or subject name from prompt
+  // Clean prompt term for topic identification
   const subject = cleanPrompt
-    .replace(/^(what is|tell me about|how to take|dosage of|side effects of|can i take|is it safe to take|what are the uses of|can you explain|ما هو|ما هي|كيف أستخدم|ما جرعة|أضرار|آثار|دواعي استعمال)/i, '')
+    .replace(/^(what is|tell me about|how to take|dosage of|side effects of|can i take|is it safe to take|what are the uses of|can you explain|what medication|medicine for|drug for|ما هو|ما هي|كيف أستخدم|ما جرعة|أضرار|آثار|دواعي استعمال|دواء لـ|علاج لـ)/i, '')
     .trim() || cleanPrompt;
 
   const isInteraction = lower.includes('interaction') || lower.includes('combine') || lower.includes('together') || lower.includes('with') || lower.includes('تداخل') || lower.includes('مع') || lower.includes('تفاعل');
   const isDosage = lower.includes('dose') || lower.includes('dosage') || lower.includes('how much') || lower.includes('mg') || lower.includes('جرعة') || lower.includes('طريقة') || lower.includes('كم مرة');
   const isSideEffect = lower.includes('side effect') || lower.includes('adverse') || lower.includes('risk') || lower.includes('harm') || lower.includes('أعراض') || lower.includes('آثار') || lower.includes('أضرار');
-  const isSymptom = lower.includes('headache') || lower.includes('fever') || lower.includes('pain') || lower.includes('cough') || lower.includes('nausea') || lower.includes('صداع') || lower.includes('حرارة') || lower.includes('ألم') || lower.includes('سعال');
+  const isSymptom = lower.includes('headache') || lower.includes('fever') || lower.includes('pain') || lower.includes('cough') || lower.includes('nausea') || lower.includes('reflux') || lower.includes('cold') || lower.includes('flu') || lower.includes('allergy') || lower.includes('صداع') || lower.includes('حرارة') || lower.includes('ألم') || lower.includes('سعال') || lower.includes('برد') || lower.includes('رشح') || lower.includes('حموضة');
 
   if (isAr) {
     if (isInteraction) {
-      return `⚡ **استشارات التداخلات الدوائية والتركيبية - MediBot AI**\n\nبخصوص استفسارك حول تداخل والأمان العلاجي لـ: **"${cleanPrompt}"**\n\n### 🧪 **التقييم الصيدلاني للتداخلات الدوائية:**\n- **تحليل التوافق الكيميائي:** عند استخدام أكثر من مستحضر دوائي أو مكمل غذائي معاً، يتم فحص مسارات الأيض في الكبد (إنزيمات السيتوكروم P450) والإطراح الكلوي لمنع تضاعف الجرعة أو إبطال الفعالية.\n- **توصيات التناول والزمن:**\n  1. يُفضل الفصل بين الأدوية بفارق **ساعتين على الأقل** إذا كانت إحداها تؤثر على امتصاص المعدة (مثل مضادات الحموضة أو الكالسيوم/الحديد).\n  2. تجنب شرب العصائر الحمضية مثل الجريب فروت مع أدوية الضغط والكوليسترول لتجنب زيادة التركيز بالدم.\n- **علامات التفاعل السلبي التي تستدعي المتابعة:** الدوخة المفاجئة، هبوط أو ارتفاع الضغط، الغثيان الشديد، أو ظهور طفح جلدي.\n\n---\n🩺 **إرشاد السلامة:** أبلغ طبيبك أو الصيدلي بكافة الأدوية والمكملات التي تتناولها حالياً للحصول على جدول مواعيد آمن.`;
+      return `⚡ **إرشادات التداخلات والجمع بين الأدوية - MediBot AI**
+
+بخصوص استفسارك حول أمان استخدام: **"${cleanPrompt}"**
+
+### 🧪 **القواعد الأساسية للأمان عند الجمع بين الأدوية:**
+- **الفصل الزمني بين الأدوية:** يُنصح بترك فارق زمني لا يقل عن **ساعتين** بين الأدوية، خاصة إذا كانت تحتوي على مضادات حموضة، حديد، أو كالسيوم لأنها تمنع امتصاص باقي الأدوية.
+- **تجنب تكرار المادة الفعالة:** تأكد من أن المستحضرات التي تتناولها لا تحتوي على نفس المادة بنفس الوقت (مثل تناول أدوية برد متعددة تحتوي جميعها على الباراسيتامول لتجنب زيادة الجرعة على الكبد).
+- **التفاعل مع الأطعمة والمشروبات:** تجنب تناول أدوية الضغط أو الكوليسترول مع عصير الجريب فروت.
+
+---
+🩺 **تنبيه:** يفضل دائماً إطلاع الطبيب أو الصيدلي على قائمة أدويتك الحالية لضمان الجدول العلاجي الأكثر أماناً.`;
     }
 
     if (isDosage) {
-      return `⚡ **دليل الجرعات وإرشادات التناول - MediBot AI**\n\nاستجابة لطلبك بخصوص الجرعة والاستخدام الموصى به لـ: **"${cleanPrompt}"**\n\n### ⏱️ **البروتوكول الصيدلاني الموصى به للجرعات:**\n- **الجرعة النموذجية للبالغين:** تختلف الجرعات المعتمدة حسب الوزن، الحالة الصحية، وشدة الأعراض. يجب عدم تجاوز الحد الأقصى اليومي المدون على العبوة.\n- **توقيت العلاج والوجبات:**\n  - **مع الطعام:** الأدوية المسكنة ومضادات الالتهاب يفضل تناولها بعد الوجبات لحماية جدار المعدة.\n  - **على معدة فارغة:** أدوية الغدة الدرقية وبعض المضادات الحيوية تتطلب التناول قبل الأكل بـ 30-60 دقيقة مع كوب كامل من الماء.\n- **التصرف عند نسيان الجرعة:** تناول الجرعة فور تذكرها، إلا إذا اقترب موعد الجرعة التالية. **لا تضاعف الجرعة مطلقاً** للتعويض.\n\n---\n🩺 **تنبيه السلامة:** الجرعات الدقيقة تُحدد بواسطة الطبيب المعالج بناءً على الفحوصات ووظائف الكبد والكلى.`;
+      return `⚡ **دليل الجرعات وطريقة التناول - MediBot AI**
+
+بخصوص استفسارك حول الجرعة وطريقة الاستخدام لـ: **"${cleanPrompt}"**
+
+### ⏱️ **إرشادات التناول والجرعة الآمنة:**
+- **الالتزام بالمواعيد:** تناول الدواء في مواعيد منتظمة (مثلاً كل 8 ساعات أو كل 12 ساعة) لضمان ثبات نسبة الدواء في الدم.
+- **مع الطعام أم على معدة فارغة؟**
+  - **مسكنات ومضادات التهاب (مثل الإيبوبروفين والكتوفان):** تُؤخذ بعد الطعام مباشرة لحماية المعدة.
+  - **أدوية المعدة والتأثير على الغدة (مثل الأوميبرازول والثيروكسين):** تُؤخذ على معدة فارغة قبل الأكل بـ 30-60 دقيقة.
+- **في حال نسيان الجرعة:** خذ الجرعة فور تذكرها، إلا إذا اقترب موعد الجرعة التالية. **لا تتناول جرعة مضاعفة أبداً**.
+
+---
+🩺 **تنبيه:** اتبع الجرعة المحددة من الطبيب المعالج أو المكتوبة على العبوة الخارجية.`;
     }
 
     if (isSideEffect) {
-      return `⚡ **ملف السلامة والأعراض الجانبية - MediBot AI**\n\nبخصوص تقييم الآثار والأعراض الجانبية المتعلقة بـ: **"${cleanPrompt}"**\n\n### ⚠️ **التحليل السريري للأعراض والآثار الجانبية:**\n- **الأعراض المتوقعة الشائعة (خفيفة إلى مؤقتة):** اضطراب خفيف بالمعدة، دوخة عند الاستلقاء، أو جفاف بسيط بالفم. غالباً ما تزول هذه الأعراض مع تكيف الجسم.\n- **الاحتياطات والوقاية:** شرب كميات كافية من الماء، أخذ الدواء مع الوجبات الخفيفة، وتجنب النهوض المفاجئ للحد من الدوار.\n- **🚨 أعراض التحذير الطارئة (تستدعي مراجعة الطوارئ فوراً):**\n  - تورم الوجه، الشفتين، أو اللسان (علامات حساسية شديدة).\n  - ضيق وسرعة في التنفس.\n  - طفح جلدي منتشر أو آلام حادة بالمعدة والكبد.\n\n---\n🩺 **تنبيه السلامة:** إذا كانت الأعراض الجانبية مستمرة أو تؤثر على حياتك اليومية، استشر الطبيب فوراً لتعديل العلاج أو تغيير الجرعة.`;
+      return `⚡ **الأعراض الجانبية وكيفية التعامل معها - MediBot AI**
+
+بخصوص استفسارك حول الأعراض الجانبية المتعلقة بـ: **"${cleanPrompt}"**
+
+### ⚠️ **الأعراض الجانبية الشائعة والنصائح العملية:**
+- **اضطراب المعدة أو الغثيان:** يمكن التقليل منه بتناول الدواء مع وجبة خفيفة أو كوب كبير من الماء.
+- **الدوخة والخمول:** تجنب النهوض المفاجئ من الفراش، ولا تقود السيارة إذا كان الدواء يسبب النعاس (مثل أدوية البرد والحساسية).
+- **جفاف الفم:** اشرب كميات كافية من الماء أو استخدم العلكة الخالية من السكر.
+
+### 🚨 **أعراض طارئة تتطلب مراجعة الطبيب فوراً:**
+- تورم الشفتين أو الوجه أو صعوبة التنفس (علامات حساسية شديدة).
+- طفح جلدي مفاجئ أو آلام شديدة بالمعدة.
+
+---
+🩺 **تنبيه:** معظم الأعراض الخفيفة تزول مع بداية تكيف الجسم مع العلاج.`;
     }
 
     if (isSymptom) {
-      return `⚡ **التقييم السريري للأعراض والتوجيه العلاجي - MediBot AI**\n\nبخصوص تقييم Symptom Analysis لـ: **"${cleanPrompt}"**\n\n### 🩺 **التشخيص المبدئي والرعاية الذاتية:**\n- **التحليل السريري:** الأعراض المذكورة تشير إلى استجابة جهازيّة قد تكون ناتجة عن إجهاد، التهاب فيروسي/بكتيري، أو تقلبات هيدروليكية بالكرات الدموية.\n- **خطوات الرعاية المنزلية الأولية:**\n  1. الراحة التامة وضمان التروية الكافية بشرب الماء والسوائل الدافئة.\n  2. استخدام المسكنات الآمنة عند الحاجة (مثل الباراسيتامول بجرعات مضبوطة).\n  3. قياس العلامات الحيوية (درجة الحرارة، ضغط الدم، ومستوى الأكسجين).\n- **متى يتوجب زيارة الطبيب؟:** إذا استمرت الأعراض لأكثر من 48-72 ساعة، أو رافقها ارتفاع شديد بالحرارة، أو فقدان للوعي، أو ألم حاد بالصدر.\n\n---\n🩺 **تنبيه السلامة:** التشخيص النهائي يتطلب فحصاً سريريا ومختبرياً مباشراً من قبل استشاري متخصص.`;
+      return `⚡ **خيارات الأدوية الموصى بها للأعراض - MediBot AI**
+
+بخصوص طلبك لعلاج وإرشادات حول: **"${cleanPrompt}"**
+
+### 💊 **أبرز الخيارات الدوائية الآمنة (بدون وصفة طبيب):**
+
+1. **للصداع والحرارة وآلام الجسم:**
+   - **باراسيتامول (Panadol / Tylenol / Cetal):** 500 ملغ إلى 1000 ملغ كل 4-6 ساعات (الحد الأقصى 4000 ملغ/يوم). آمن ومناسب لمعظم الحالات.
+   - **إيبوبروفين (Advil / Motrin / Brufen):** 200 ملغ إلى 400 ملغ كل 6-8 ساعات مع الطعام. ممتاز للآلام والالتهابات.
+
+2. **للاحتقان والبرد والرشح:**
+   - **أدوية البرد المركبة (Congestal / Panadol Cold & Flu):** تخفف الرشح، انسداد الأنف، والحرارة.
+   - **مضادات الهيستامين (Loratadine / Zyrtec):** 10 ملغ مرة يومياً لوقف العطس وسيلان الأنف.
+
+3. **لحموضة وارتجاع المعدة:**
+   - **مضادات الحموضة السريعة (Gaviscon / Rennie):** تسكين فوري للحرقان بعد الوجبات.
+   - **أوميبرازول (Omeprazole 20mg):** قرص واحد صباحاً قبل الفطور بـ 30 دقيقة للحموضة المستمرة.
+
+---
+🩺 **نصائح إضافية:** أثرِ العلاج بالراحة الكافية وشرب السوائل الدافئة. إذا استمرت الأعراض أكثر من 3 أيام استشر الطبيب.`;
     }
 
-    return `⚡ **التقرير الصيدلاني والتقييم السريري الشامل - MediBot AI**\n\nبخصوص استفسارك المباشر حول: **"${cleanPrompt}"**\n\n### 💊 **1. التقييم الدوائي والمادة الفعالة:**\n- **الموضوع المستهدف:** **${subject || cleanPrompt}**\n- **الفئة والوظيفة السريرية:** يُقيم المستحضر ضمن الفئات العلاجية المتخصصة في ضبط الأعراض وتنظيم العمليات الحيوية وتثبيط العوامل الممرضة أو تنظيم الكثافة النسيجية والهرمونية.\n- **الهدف العلاجي:** تخفيف حدة الأعراض، الوقاية من المضاعفات، واستعادة التوازن السريري للجسم.\n\n### ⏱️ **2. إرشادات الاستخدام والتناول:**\n- **طريقة التناول:** التزام دائم بالجرعة المحددة زمنيّاً (مرة يومياً أو كل 8-12 ساعة).\n- **الارتباط بالأكل:** يُنصح بمراجعة التعليمات الخاصة بالمنتج؛ حيث تتطلب بعض المركبات معدة فارغة لزيادة الامتصاص بينما تتطلب أدوية أخرى التناول مع الوجبات لحماية القناة الهضمية.\n\n### ⚠️ **3. الاحتياطات وموانع الاستعمال:**\n- **المتابعة الفحصية:** يُوصى بانتظام فحص وظائف الكبد والكلى والتحاليل الدورية عند الاستخدام الممتد.\n- **الحمل والرضاعة:** يجب مراجعة الطبيب لتأكيد فئة السلامة (Pregnancy Category) قبل الاستخدام.\n- **التداخلات:** مراجعة قائمة الأدوية الحالية لتجنب مضاعفة التأثير أو تقليل الامتصاص.\n\n---\n🩺 **إرشادات السلامة السريرية:** هذه المعلومات مخصصة للتوعية والتثقيف الطبي. للحصول على توجيه تشخيصي مخصص، يُرجى التواصل المباشر مع الطبيب المعالج أو الصيدلي المختص.`;
+    return `⚡ **دليل ومعلومات الدواء الاسترشادي - MediBot AI**
+
+بخصوص استفسارك العلاجي حول: **"${cleanPrompt}"**
+
+### 💊 **أهم المعلومات والخطوات العملية:**
+- **دواعي الاستعمال:** يُستخدم هذا النوع من العلاج لتخفيف الأعراض ومساعدة الجسم على التعافي والسيطرة على الحالة الصحية.
+- **طريقة التناول:** يُفضل تناول الأقراص مع كوب كامل من الماء وفي نفس الموعد يومياً لضمان الفعالية.
+- **حماية المعدة:** إذا كان الدواء مسكناً أو مضاداً للحيويات، تناوله بعد الوجبة لحماية جدار المعدة من التهيج.
+- **الاحتياطات:** تجنب شرب الكحول أو الجمع بين أدوية متعددة دون التأكد من عدم وجود تداخل دوائي.
+
+---
+🩺 **تنبيه السلامة:** هذه المعلومات لأغراض التوعية والتثقيف. للاستفسار عن حالة خاصة أو جرعة مخصصة، يُرجى التواصل مع الطبيب أو الصيدلي.`;
   }
 
+  // English Responses
   if (isInteraction) {
-    return `⚡ **Drug Interaction & Clinical Safety Assessment - MediBot AI**\n\nRegarding your query on potential interactions for: **"${cleanPrompt}"**\n\n### 🧪 **Pharmacological Interaction Analysis:**\n- **Metabolic Pathway Compatibility:** When combining pharmaceutical compounds, supplements, or OTC remedies, clinical evaluation ensures that hepatic enzymes (CYP450 system) and renal filtration pathways are not overloaded or inhibited.\n- **Key Administration Guidance:**\n  1. Space medications by at least **2 hours** if taking binding agents (such as calcium, iron, or antacids).\n  2. Avoid grapefruit juice or high-citric beverages with blood pressure or lipid-lowering therapies as they alter drug serum concentration.\n- **Monitoring Parameters:** Watch for unexplained lightheadedness, unusual sedation, rapid heart rate changes, or gastrointestinal discomfort.\n\n---\n🩺 **Clinical Safety Note:** Always review your active medication schedule with a licensed physician or pharmacist before introducing new supplements or prescriptions.`;
+    return `⚡ **Drug Interaction & Safety Guide - MediBot AI**
+
+Regarding your query about combining or interactions for: **"${cleanPrompt}"**
+
+### 🧪 **Key Safety Rules for Combining Medications:**
+- **Space Doses Out:** Leave at least a **2-hour gap** between taking different medications, especially if taking antacids, iron, or calcium supplements which block absorption.
+- **Avoid Duplicate Ingredients:** Check labels on over-the-counter cold/flu remedies so you don't accidentally take double doses of acetaminophen (paracetamol).
+- **Food & Drink Watch:** Avoid drinking grapefruit juice with blood pressure or cholesterol medications as it can cause unsafe drug buildup in your system.
+
+---
+🩺 **Clinical Safety Note:** Always inform your doctor or pharmacist of all vitamins, OTC remedies, and prescriptions you take.`;
   }
 
   if (isDosage) {
-    return `⚡ **Dosage & Administration Clinical Guideline - MediBot AI**\n\nIn response to your query regarding dosing protocols for: **"${cleanPrompt}"**\n\n### ⏱️ **Pharmacological Dosing Directives:**\n- **Adult Dosing Fundamentals:** Therapeutic dosages depend on body mass, age, renal clearance (eGFR), and specific diagnostic indications. Always follow the precise dose printed on the prescription label.\n- **Food & Timing Requirements:**\n  - **With Food:** NSAIDs, steroids, and certain antibiotics should be ingested post-meals to buffer stomach mucosal lining.\n  - **Empty Stomach:** Thyroid replacements and bisphosphonates require administration 30–60 minutes before breakfast with a full glass of water.\n- **Missed Dose Protocol:** Take the missed dose as soon as remembered unless it is almost time for your next scheduled dose. **Never double up on doses.**\n\n---\n🩺 **Clinical Safety Note:** Dosing adjustments for pediatric, geriatric, or organ-impaired patients must be tailored directly by a treating clinician.`;
+    return `⚡ **Dosage & Administration Guidelines - MediBot AI**
+
+Regarding dosage instructions for: **"${cleanPrompt}"**
+
+### ⏱️ **Safe Dosing & Administration Rules:**
+- **Timing:** Take your doses at regular intervals (e.g. every 8 or 12 hours) to keep a steady therapeutic level in your body.
+- **With or Without Food?**
+  - **Pain Relievers & NSAIDs (Ibuprofen, Naproxen):** Take with a meal or snack to shield your stomach.
+  - **Reflux & Thyroid Medications (Omeprazole, Levothyroxine):** Take on an empty stomach with a glass of water 30–60 minutes before breakfast.
+- **Missed Doses:** Take it as soon as you remember unless it is almost time for your next dose. **Never double up on doses.**
+
+---
+🩺 **Clinical Safety Note:** Always follow the exact dose specified on your prescription bottle or package insert.`;
   }
 
   if (isSideEffect) {
-    return `⚡ **Adverse Effect & Safety Profile Analysis - MediBot AI**\n\nRegarding the adverse effect profile and risks for: **"${cleanPrompt}"**\n\n### ⚠️ **Clinical Safety & Tolerance Assessment:**\n- **Common & Mild Effects:** Transient mild nausea, mild drowsiness, or minor digestive changes frequently resolve as the body adapts to therapy.\n- **Risk Mitigation Strategies:** Maintain proper oral hydration, take doses with small meals where appropriate, and avoid sudden postural changes to minimize lightheadedness.\n- **🚨 Red-Flag Symptoms (Seek Immediate Emergency Care):**\n  - Facial, lip, or throat swelling (angioedema).\n  - Acute shortness of breath or wheezing.\n  - Severe, unresolving abdominal pain or jaundice.\n\n---\n🩺 **Clinical Safety Note:** Report persistent or worsening adverse reactions promptly to your primary physician or local pharmacist.`;
+    return `⚡ **Side Effects & Management Advice - MediBot AI**
+
+Regarding side effects and safety for: **"${cleanPrompt}"**
+
+### ⚠️ **Common Side Effects & Simple Relief Tips:**
+- **Stomach Upset / Nausea:** Take your medication with a small meal, cracker, or milk.
+- **Dizziness or Drowsiness:** Stand up slowly from sitting or lying positions. Avoid driving if the medication makes you sleepy.
+- **Dry Mouth:** Stay hydrated with water throughout the day.
+
+### 🚨 **Red-Flag Symptoms (Seek Immediate Medical Care):**
+- Swelling of lips, tongue, or throat, or trouble breathing (severe allergic reaction).
+- Sudden severe skin rash or unresolving severe stomach pain.
+
+---
+🩺 **Clinical Safety Note:** Mild side effects usually subside as your body gets used to the medication. Consult your pharmacist if they persist.`;
   }
 
   if (isSymptom) {
-    return `⚡ **Symptom Evaluation & Self-Care Direction - MediBot AI**\n\nRegarding your health query evaluating: **"${cleanPrompt}"**\n\n### 🩺 **Clinical Symptom Evaluation:**\n- **Pathophysiological Context:** The reported symptoms may indicate an acute response to viral/bacterial stressors, inflammatory cascades, or systemic fatigue.\n- **Initial Self-Care & Hydration Protocol:**\n  1. Prioritize adequate rest and continuous fluid rehydration.\n  2. Utilize age-appropriate OTC antipyretics or analgesics (e.g., dosage-controlled acetaminophen or ibuprofen) if pain or fever is present.\n  3. Track core vital signs (temperature, pulse, blood pressure).\n- **When to Seek Medical Attention:** Consult a healthcare provider if symptoms persist beyond 48–72 hours, worsen significantly, or are accompanied by high fever or chest tightness.\n\n---\n🩺 **Clinical Safety Note:** This guide is for educational evaluation. A definitive medical diagnosis requires direct clinical examination by a qualified physician.`;
+    return `⚡ **Recommended Medication Options for Symptoms - MediBot AI**
+
+Regarding your query for effective relief for: **"${cleanPrompt}"**
+
+### 💊 **Common, Effective Over-The-Counter (OTC) Options:**
+
+1. **For Pain, Headache & Fever:**
+   - **Acetaminophen / Paracetamol (Tylenol / Panadol):** 500mg to 1000mg every 4 to 6 hours as needed (Max 4000mg per day). Gentle on the stomach.
+   - **Ibuprofen (Advil / Motrin):** 200mg to 400mg every 6 hours with food. Excellent for inflammatory pain, migraines, and toothaches.
+
+2. **For Cold, Flu & Nasal Congestion:**
+   - **Decongestants (Congestal / Sudafed):** Relieves stuffy nose and sinus pressure.
+   - **Antihistamines (Loratadine / Zyrtec 10mg):** Relieves sneezing, runny nose, and itchy eyes.
+
+3. **For Heartburn & Acid Reflux:**
+   - **Antacids (Gaviscon / Tums):** Fast relief for burning after meals.
+   - **Omeprazole (20mg once daily):** Take 30 minutes before breakfast for recurring acid reflux.
+
+---
+🩺 **Home Care Advice:** Hydrate well with water and get plenty of rest. If symptoms worsen or persist longer than 3 days, consult a physician.`;
   }
 
-  return `⚡ **MediBot Comprehensive Clinical Monograph & Evaluation**\n\nRegarding your direct query: **"${cleanPrompt}"**\n\n### 💊 **1. Pharmacological Classification & Purpose:**\n- **Target Subject:** **${subject || cleanPrompt}**\n- **Therapeutic Category:** Evaluated within evidence-based pharmacological standards for symptom control, biological pathway modulation, and therapeutic disease management.\n- **Primary Clinical Goals:** Symptom mitigation, prevention of systemic complications, and physiological stabilization.\n\n### ⏱️ **2. Administration & Dosing Principles:**\n- **Dosing Consistency:** Maintain strict, regular dosing intervals as prescribed (e.g., once daily or every 8-12 hours).\n- **Administration Timing:** Check specific product guidelines—some compounds require an empty stomach for maximum bioavailability, while others require food buffering to protect the digestive tract.\n\n### ⚠️ **3. Key Precautions & Clinical Monitoring:**\n- **Organ Function Checks:** Periodic renal (creatinine) and hepatic (liver enzymes) evaluations are recommended during extended therapy.\n- **Special Populations:** Consult a physician prior to use during pregnancy, lactation, or if managing chronic health conditions.\n- **Interaction Screening:** Ensure all current prescriptions, OTC drugs, and herbal supplements are cross-referenced for compatibility.\n\n---\n🩺 **Clinical Safety Disclaimer:** This evidence-based reference is provided for informational and educational purposes only and does not replace individual consultation with a licensed doctor or pharmacist.`;
+  return `⚡ **Practical Medication Information Guide - MediBot AI**
+
+Regarding your query on: **"${cleanPrompt}"**
+
+### 💊 **Essential Practical Guidelines:**
+- **Primary Purpose:** This medication helps ease symptoms, target infections, or stabilize your health condition when taken consistently.
+- **How to Take:** Swallow tablets whole with a full glass of water.
+- **Stomach Protection:** Take NSAIDs, painkillers, and antibiotics with food to avoid stomach irritation.
+- **Interactions:** Avoid drinking alcohol while taking medications and verify compatibility before adding new OTC drugs.
+
+---
+🩺 **Clinical Safety Disclaimer:** This guide provides general educational information. Please consult your physician or pharmacist for individualized medical direction.`;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number = 12000): Promise<T> {
