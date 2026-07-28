@@ -1,0 +1,6 @@
+{
+  "name": "MediBot AI",
+  "description": "Super smart AI medication assistant providing evidence-based drug information, interaction checks, pill photo identification, and dosage guidelines.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
