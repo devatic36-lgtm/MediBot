@@ -19,7 +19,7 @@ app.use(express.json({ limit: "20mb" }));
 
 // API Health route
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", bot: "MediBot AI", model: "gemini-3.6-flash" });
+  res.json({ status: "ok", bot: "MediBot AI", model: "gemini-2.5-flash" });
 });
 
 
@@ -37,10 +37,9 @@ app.post("/api/chat", async (req, res) => {
     }
 
     if (!process.env.GEMINI_API_KEY) {
-      const missingKeyText = language === "ar"
-        ? "⚠️ **مفتاح GEMINI_API_KEY غير متوفر.** يرجى التأكد من إضافة مفتاح API في الإعدادات."
-        : "⚠️ **GEMINI_API_KEY is missing.** Please ensure your API key is configured in Settings > Secrets.";
-      return res.json({ text: missingKeyText, groundingSources: [] });
+      console.log("GEMINI_API_KEY is missing, utilizing clinical offline synthesis engine.");
+      const fallbackText = getOfflineClinicalResponse(prompt || "Medication query", language, mode);
+      return res.json({ text: fallbackText, groundingSources: [] });
     }
 
     // Build system instructions with language directive

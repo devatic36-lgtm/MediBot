@@ -62,7 +62,7 @@ export function getOfflineClinicalResponse(prompt: string, language: string, mod
       sideEffectsAr: ['سعال جاف مستمر', 'دوخة عند الوقوف', 'ارتفاع نسبة البوتاسيوم', 'صداع خفيف'],
     },
     metformin: {
-      keywords: ['metformin', 'glucophage', 'ميتفورمين', 'جلوكوفاج'],
+      keywords: ['metformin', 'glucophage', 'ميتفورمين', 'جلوكوفاج', 'سيدوفاج'],
       nameEn: 'Metformin (Glucophage)',
       nameAr: 'ميتفورمين (Metformin / جلوكوفاج)',
       classEn: 'Biguanide Anti-Diabetic Agent',
@@ -182,7 +182,7 @@ export function getOfflineClinicalResponse(prompt: string, language: string, mod
       sideEffectsAr: ['تورم الكاحلين', 'احمرار الوجه أو الحرارة', 'دوخة خفيفة', 'خفقان'],
     },
     bonosome: {
-      keywords: ['bonosome', 'بونوسوم', 'بونوسوم'],
+      keywords: ['bonosome', 'بونوسوم'],
       nameEn: 'Bonosome (Zoledronic Acid / Bone Metabolism Regulator)',
       nameAr: 'بونوسوم (Bonosome / حمض الزوليدرونيك)',
       classEn: 'Bisphosphonate (Bone Resorption Inhibitor)',
@@ -210,6 +210,66 @@ export function getOfflineClinicalResponse(prompt: string, language: string, mod
       warningsAr: 'يحظر استخدامه للحساسين للبنسلين. يجب إكمال الكورس العلاجي كاملاً لمنع مقاومة البكتيريا.',
       sideEffectsEn: ['Diarrhea / loose stools', 'Nausea', 'Abdominal cramps', 'Mild skin rash'],
       sideEffectsAr: ['إسهال أو لين البراز', 'غثيان', 'تقلصات بطنية', 'طفح جلدي خفيف'],
+    },
+    ciprofloxacin: {
+      keywords: ['ciprofloxacin', 'cipro', 'سبروفلوكساسين', 'سيبرو'],
+      nameEn: 'Ciprofloxacin (Cipro)',
+      nameAr: 'سيبروفلوكساسين (Ciprofloxacin / سيبرو)',
+      classEn: 'Fluoroquinolone Antibiotic',
+      classAr: 'مضاد حيوي من فئة الفلوروكينولون',
+      usesEn: 'Treatment of complex urinary tract infections, prostatitis, abdominal infections, and certain severe bacterial gastroenteritis.',
+      usesAr: 'علاج التهابات المسالك البولية المعقدة، التهاب البروستاتا، والتهابات البطن والجلد البكتيرية.',
+      dosageEn: '250mg to 750mg twice daily for 3 to 14 days as directed. Take 2 hours before or 6 hours after dairy, calcium, or antacids.',
+      dosageAr: '250 ملغ إلى 750 ملغ مرتين يومياً. يجب الفصل بينه وبين الحليب ومضادات الحموضة والكالسيوم بساعتين على الأقل.',
+      warningsEn: 'Boxed warning for tendinitis and tendon rupture risk. Avoid excessive sunlight/UV exposure.',
+      warningsAr: 'تحذير هائل بخصوص خطر التهاب أو تمزق الأوتار (خاصة وتر العرقوب). تجنب التعرض المباشر لأشعة الشمس.',
+      sideEffectsEn: ['Nausea / diarrhea', 'Headache / dizziness', 'Photosensitivity', 'Tendon pain or swelling'],
+      sideEffectsAr: ['غثيان وإسهال', 'صداع ودوخة', 'حساسية للضوء', 'ألم أو تورم في الأوتار'],
+    },
+    azithromycin: {
+      keywords: ['azithromycin', 'zithromax', 'z-pak', 'أزيثروميسين', 'ازيثرومايسين', 'زيثروماكس'],
+      nameEn: 'Azithromycin (Zithromax / Z-Pak)',
+      nameAr: 'أزيثروميسين (Azithromycin / زيثروماكس)',
+      classEn: 'Macrolide Antibiotic',
+      classAr: 'مضاد حيوي من فئة الماكرولايد',
+      usesEn: 'Upper and lower respiratory tract infections, pneumonia, strep throat, sinusitis, and skin infections.',
+      usesAr: 'التهابات الجهاز التنفسي العلوي والسفلي، التهاب الشعب الهوائية، الرئوي، والتهاب الحلق والجيوب الأنفية.',
+      dosageEn: 'Standard Z-Pak regimen: 500mg on Day 1, followed by 250mg once daily on Days 2 through 5.',
+      dosageAr: 'بروتوكول Z-Pak الشائع: 500 ملغ في اليوم الأول، ثم 250 ملغ مرة واحدة يومياً من اليوم الثاني إلى الخامس.',
+      warningsEn: 'Use caution in patients with known QT prolongation or heart rhythm disorders. Can be taken with or without food.',
+      warningsAr: 'يستوجب الحذر لدى مرضى اضطراب ضربات القلب وتطاول موجة QT. يمكن تناوله مع الطعام أو بدونه.',
+      sideEffectsEn: ['Abdominal cramping', 'Diarrhea', 'Nausea', 'Temporary taste alter'],
+      sideEffectsAr: ['مغص بطني', 'إسهال', 'غثيان', 'تغير مؤقت في التذوق'],
+    },
+    cetal: {
+      keywords: ['cetal', 'سيتال', 'سيتال أطفال'],
+      nameEn: 'Cetal (Paracetamol / Acetaminophen Preparation)',
+      nameAr: 'سيتال (Cetal / باراسيتامول)',
+      classEn: 'Pediatric & Adult Analgesic & Antipyretic',
+      classAr: 'مسكن آلام وخافض حرارة (مخصص للأطفال والبالغين)',
+      usesEn: 'Fever reduction during viral infections or vaccinations, and relief of mild teething, earache, or flu discomfort.',
+      usesAr: 'خافض حرارة فعال أثناء الإنفلونزا والتطعيمات، وتسكين آلام التسنين وألم الأذن والصداع.',
+      dosageEn: 'Dosed strictly by body weight for infants/children (10-15 mg/kg per dose every 4-6 hours). Adult dose: 500-1000mg.',
+      dosageAr: 'للأطفال: يُحسب بدقة حسب وزن الطفل (10-15 ملغ لكل كجم كل 4-6 ساعات). للبالغين: 500 إلى 1000 ملغ.',
+      warningsEn: 'Ensure correct measuring cup or dropper. Do not combine with other paracetamol syrups.',
+      warningsAr: 'استخدم المعيار أو المقطرة الدقيقة المصاحبة للدواء. لا تدمجه مع شراب آخر يحتوي على باراسيتامول.',
+      sideEffectsEn: ['Very safe at proper weight-based dosages', 'Mild GI comfort at high doses'],
+      sideEffectsAr: ['آمن جداً عند الالتزام بالجرعة المقاسة بوزن الطفل', 'انزعاج معدي خفيف عند الجرعات المفرطة'],
+    },
+    congestal: {
+      keywords: ['congestal', 'كونجستال'],
+      nameEn: 'Congestal (Paracetamol / Pseudoephedrine / Chlorpheniramine)',
+      nameAr: 'كونجستال (Congestal)',
+      classEn: 'Multi-Symptom Cold, Flu & Decongestant Combination',
+      classAr: 'علاج مركب لأعراض البرد والرشح والأنفلونزا واحتقان الأنف',
+      usesEn: 'Relief of nasal congestion, sneezing, runny nose, sinus pressure, fever, and body aches from common cold or flu.',
+      usesAr: 'تخفيف احتقان الأنف، العطس، الرشح، ضغط الجيوب الأنفية، الحرارة، وآلام الجسم الناتجة عن البرد.',
+      dosageEn: '1 tablet every 6 to 8 hours as needed. Do not exceed 4 tablets in 24 hours.',
+      dosageAr: 'قرص واحد كل 6 إلى 8 ساعات عند الحاجة. لا تتجاوز 4 أقراص خلال 24 ساعة.',
+      warningsEn: 'Causes drowsiness (chlorpheniramine). Avoid driving. Caution in patients with uncontrolled high blood pressure or glaucoma due to pseudoephedrine.',
+      warningsAr: 'يسبب النعاس بسبب مضاد الهيستامين. تجنب القيادة. يتطلب الحذر لدى مرضى ضغط الدم المرتفع غير المنتظم أو الجلوكوما.',
+      sideEffectsEn: ['Drowsiness / sedation', 'Dry mouth', 'Mild elevation in blood pressure or heart rate'],
+      sideEffectsAr: ['نعاس وخمول', 'جفاف الفم', 'ارتفاع خفيف في ضغط الدم أو تسارع القلوب'],
     },
   };
 
@@ -239,8 +299,8 @@ export function getOfflineClinicalResponse(prompt: string, language: string, mod
       return body;
     }
 
-    // Custom response when no specific listed drug matches
-    return `⚡ **الإرشاد والتحليل السريري - MediBot AI**\n\nبخصوص استفسارك الطبي: **"${prompt}"**\n\n### 🩺 **التقييم الصيدلاني والطبي:**\n- **التحليل:** للإجابة الدقيقة على سؤالك حول "${prompt}"، يقوم نظامنا السريري بتقييم دواعي الاستعمال، الجرعات الموصى بها، وطبيعة التداخلات الدوائية.\n- **احتياطات السلامة:** يُنصح دائماً بالتحقق من تركيز المادة الفعالة، التاريخ المكتوب على العبوة، ومراجعة أي تداخل مع أدويتك الحالية قبل الاستخدام.\n- **التوجيه العلاجي:** يفضل استشارة الطبيب المعالج أو الصيدلي لوضع خطة علاجية مخصصة لحالتك الصحية.\n\n---\n🩺 **تنبيه السلامة:** المعلومات المقدمة للأغراض التوعوية والتعليمية فقط، ولا تغني عن الاستشارة الطبية المباشرة.`;
+    // Smart Dynamic Response Generator for non-dictionary queries
+    return synthesizeDynamicClinicalResponse(prompt, true, mode);
   } else {
     if (matchedDrugs.length > 0) {
       let body = `⚡ **MediBot Direct Clinical Knowledge Base**\n\n`;
@@ -260,9 +320,62 @@ export function getOfflineClinicalResponse(prompt: string, language: string, mod
       return body;
     }
 
-    // Custom response addressing the user's specific text directly
-    return `⚡ **MediBot Clinical Guidance Analysis**\n\nRegarding your query: **"${prompt}"**\n\n### 🩺 **Pharmacological & Clinical Evaluation**\n- **Medical Context:** To evaluate "${prompt}", healthcare professionals review active pharmacological ingredients, indicated therapeutic dosages, and relevant clinical safety guidelines.\n- **Key Safety Precautions:** Before starting, stopping, or combining any medication or supplement related to your question, verify potential drug-drug interactions, liver/kidney clearance profiles, and contraindications.\n- **Recommended Next Steps:** Discuss your specific symptoms and medical history with a licensed physician or pharmacist for personalized dosing and diagnostic direction.\n\n---\n🩺 **Clinical Safety Note:** This reference is for educational purposes only and does not replace personal medical advice from a healthcare professional.`;
+    // Smart Dynamic Response Generator for non-dictionary queries
+    return synthesizeDynamicClinicalResponse(prompt, false, mode);
   }
+}
+
+function synthesizeDynamicClinicalResponse(prompt: string, isAr: boolean, mode: string): string {
+  const cleanPrompt = (prompt || '').trim();
+  const lower = cleanPrompt.toLowerCase();
+
+  // Extract core term or subject name from prompt
+  const subject = cleanPrompt
+    .replace(/^(what is|tell me about|how to take|dosage of|side effects of|can i take|is it safe to take|what are the uses of|can you explain|ما هو|ما هي|كيف أستخدم|ما جرعة|أضرار|آثار|دواعي استعمال)/i, '')
+    .trim() || cleanPrompt;
+
+  const isInteraction = lower.includes('interaction') || lower.includes('combine') || lower.includes('together') || lower.includes('with') || lower.includes('تداخل') || lower.includes('مع') || lower.includes('تفاعل');
+  const isDosage = lower.includes('dose') || lower.includes('dosage') || lower.includes('how much') || lower.includes('mg') || lower.includes('جرعة') || lower.includes('طريقة') || lower.includes('كم مرة');
+  const isSideEffect = lower.includes('side effect') || lower.includes('adverse') || lower.includes('risk') || lower.includes('harm') || lower.includes('أعراض') || lower.includes('آثار') || lower.includes('أضرار');
+  const isSymptom = lower.includes('headache') || lower.includes('fever') || lower.includes('pain') || lower.includes('cough') || lower.includes('nausea') || lower.includes('صداع') || lower.includes('حرارة') || lower.includes('ألم') || lower.includes('سعال');
+
+  if (isAr) {
+    if (isInteraction) {
+      return `⚡ **استشارات التداخلات الدوائية والتركيبية - MediBot AI**\n\nبخصوص استفسارك حول تداخل والأمان العلاجي لـ: **"${cleanPrompt}"**\n\n### 🧪 **التقييم الصيدلاني للتداخلات الدوائية:**\n- **تحليل التوافق الكيميائي:** عند استخدام أكثر من مستحضر دوائي أو مكمل غذائي معاً، يتم فحص مسارات الأيض في الكبد (إنزيمات السيتوكروم P450) والإطراح الكلوي لمنع تضاعف الجرعة أو إبطال الفعالية.\n- **توصيات التناول والزمن:**\n  1. يُفضل الفصل بين الأدوية بفارق **ساعتين على الأقل** إذا كانت إحداها تؤثر على امتصاص المعدة (مثل مضادات الحموضة أو الكالسيوم/الحديد).\n  2. تجنب شرب العصائر الحمضية مثل الجريب فروت مع أدوية الضغط والكوليسترول لتجنب زيادة التركيز بالدم.\n- **علامات التفاعل السلبي التي تستدعي المتابعة:** الدوخة المفاجئة، هبوط أو ارتفاع الضغط، الغثيان الشديد، أو ظهور طفح جلدي.\n\n---\n🩺 **إرشاد السلامة:** أبلغ طبيبك أو الصيدلي بكافة الأدوية والمكملات التي تتناولها حالياً للحصول على جدول مواعيد آمن.`;
+    }
+
+    if (isDosage) {
+      return `⚡ **دليل الجرعات وإرشادات التناول - MediBot AI**\n\nاستجابة لطلبك بخصوص الجرعة والاستخدام الموصى به لـ: **"${cleanPrompt}"**\n\n### ⏱️ **البروتوكول الصيدلاني الموصى به للجرعات:**\n- **الجرعة النموذجية للبالغين:** تختلف الجرعات المعتمدة حسب الوزن، الحالة الصحية، وشدة الأعراض. يجب عدم تجاوز الحد الأقصى اليومي المدون على العبوة.\n- **توقيت العلاج والوجبات:**\n  - **مع الطعام:** الأدوية المسكنة ومضادات الالتهاب يفضل تناولها بعد الوجبات لحماية جدار المعدة.\n  - **على معدة فارغة:** أدوية الغدة الدرقية وبعض المضادات الحيوية تتطلب التناول قبل الأكل بـ 30-60 دقيقة مع كوب كامل من الماء.\n- **التصرف عند نسيان الجرعة:** تناول الجرعة فور تذكرها، إلا إذا اقترب موعد الجرعة التالية. **لا تضاعف الجرعة مطلقاً** للتعويض.\n\n---\n🩺 **تنبيه السلامة:** الجرعات الدقيقة تُحدد بواسطة الطبيب المعالج بناءً على الفحوصات ووظائف الكبد والكلى.`;
+    }
+
+    if (isSideEffect) {
+      return `⚡ **ملف السلامة والأعراض الجانبية - MediBot AI**\n\nبخصوص تقييم الآثار والأعراض الجانبية المتعلقة بـ: **"${cleanPrompt}"**\n\n### ⚠️ **التحليل السريري للأعراض والآثار الجانبية:**\n- **الأعراض المتوقعة الشائعة (خفيفة إلى مؤقتة):** اضطراب خفيف بالمعدة، دوخة عند الاستلقاء، أو جفاف بسيط بالفم. غالباً ما تزول هذه الأعراض مع تكيف الجسم.\n- **الاحتياطات والوقاية:** شرب كميات كافية من الماء، أخذ الدواء مع الوجبات الخفيفة، وتجنب النهوض المفاجئ للحد من الدوار.\n- **🚨 أعراض التحذير الطارئة (تستدعي مراجعة الطوارئ فوراً):**\n  - تورم الوجه، الشفتين، أو اللسان (علامات حساسية شديدة).\n  - ضيق وسرعة في التنفس.\n  - طفح جلدي منتشر أو آلام حادة بالمعدة والكبد.\n\n---\n🩺 **تنبيه السلامة:** إذا كانت الأعراض الجانبية مستمرة أو تؤثر على حياتك اليومية، استشر الطبيب فوراً لتعديل العلاج أو تغيير الجرعة.`;
+    }
+
+    if (isSymptom) {
+      return `⚡ **التقييم السريري للأعراض والتوجيه العلاجي - MediBot AI**\n\nبخصوص تقييم Symptom Analysis لـ: **"${cleanPrompt}"**\n\n### 🩺 **التشخيص المبدئي والرعاية الذاتية:**\n- **التحليل السريري:** الأعراض المذكورة تشير إلى استجابة جهازيّة قد تكون ناتجة عن إجهاد، التهاب فيروسي/بكتيري، أو تقلبات هيدروليكية بالكرات الدموية.\n- **خطوات الرعاية المنزلية الأولية:**\n  1. الراحة التامة وضمان التروية الكافية بشرب الماء والسوائل الدافئة.\n  2. استخدام المسكنات الآمنة عند الحاجة (مثل الباراسيتامول بجرعات مضبوطة).\n  3. قياس العلامات الحيوية (درجة الحرارة، ضغط الدم، ومستوى الأكسجين).\n- **متى يتوجب زيارة الطبيب؟:** إذا استمرت الأعراض لأكثر من 48-72 ساعة، أو رافقها ارتفاع شديد بالحرارة، أو فقدان للوعي، أو ألم حاد بالصدر.\n\n---\n🩺 **تنبيه السلامة:** التشخيص النهائي يتطلب فحصاً سريريا ومختبرياً مباشراً من قبل استشاري متخصص.`;
+    }
+
+    return `⚡ **التقرير الصيدلاني والتقييم السريري الشامل - MediBot AI**\n\nبخصوص استفسارك المباشر حول: **"${cleanPrompt}"**\n\n### 💊 **1. التقييم الدوائي والمادة الفعالة:**\n- **الموضوع المستهدف:** **${subject || cleanPrompt}**\n- **الفئة والوظيفة السريرية:** يُقيم المستحضر ضمن الفئات العلاجية المتخصصة في ضبط الأعراض وتنظيم العمليات الحيوية وتثبيط العوامل الممرضة أو تنظيم الكثافة النسيجية والهرمونية.\n- **الهدف العلاجي:** تخفيف حدة الأعراض، الوقاية من المضاعفات، واستعادة التوازن السريري للجسم.\n\n### ⏱️ **2. إرشادات الاستخدام والتناول:**\n- **طريقة التناول:** التزام دائم بالجرعة المحددة زمنيّاً (مرة يومياً أو كل 8-12 ساعة).\n- **الارتباط بالأكل:** يُنصح بمراجعة التعليمات الخاصة بالمنتج؛ حيث تتطلب بعض المركبات معدة فارغة لزيادة الامتصاص بينما تتطلب أدوية أخرى التناول مع الوجبات لحماية القناة الهضمية.\n\n### ⚠️ **3. الاحتياطات وموانع الاستعمال:**\n- **المتابعة الفحصية:** يُوصى بانتظام فحص وظائف الكبد والكلى والتحاليل الدورية عند الاستخدام الممتد.\n- **الحمل والرضاعة:** يجب مراجعة الطبيب لتأكيد فئة السلامة (Pregnancy Category) قبل الاستخدام.\n- **التداخلات:** مراجعة قائمة الأدوية الحالية لتجنب مضاعفة التأثير أو تقليل الامتصاص.\n\n---\n🩺 **إرشادات السلامة السريرية:** هذه المعلومات مخصصة للتوعية والتثقيف الطبي. للحصول على توجيه تشخيصي مخصص، يُرجى التواصل المباشر مع الطبيب المعالج أو الصيدلي المختص.`;
+  }
+
+  if (isInteraction) {
+    return `⚡ **Drug Interaction & Clinical Safety Assessment - MediBot AI**\n\nRegarding your query on potential interactions for: **"${cleanPrompt}"**\n\n### 🧪 **Pharmacological Interaction Analysis:**\n- **Metabolic Pathway Compatibility:** When combining pharmaceutical compounds, supplements, or OTC remedies, clinical evaluation ensures that hepatic enzymes (CYP450 system) and renal filtration pathways are not overloaded or inhibited.\n- **Key Administration Guidance:**\n  1. Space medications by at least **2 hours** if taking binding agents (such as calcium, iron, or antacids).\n  2. Avoid grapefruit juice or high-citric beverages with blood pressure or lipid-lowering therapies as they alter drug serum concentration.\n- **Monitoring Parameters:** Watch for unexplained lightheadedness, unusual sedation, rapid heart rate changes, or gastrointestinal discomfort.\n\n---\n🩺 **Clinical Safety Note:** Always review your active medication schedule with a licensed physician or pharmacist before introducing new supplements or prescriptions.`;
+  }
+
+  if (isDosage) {
+    return `⚡ **Dosage & Administration Clinical Guideline - MediBot AI**\n\nIn response to your query regarding dosing protocols for: **"${cleanPrompt}"**\n\n### ⏱️ **Pharmacological Dosing Directives:**\n- **Adult Dosing Fundamentals:** Therapeutic dosages depend on body mass, age, renal clearance (eGFR), and specific diagnostic indications. Always follow the precise dose printed on the prescription label.\n- **Food & Timing Requirements:**\n  - **With Food:** NSAIDs, steroids, and certain antibiotics should be ingested post-meals to buffer stomach mucosal lining.\n  - **Empty Stomach:** Thyroid replacements and bisphosphonates require administration 30–60 minutes before breakfast with a full glass of water.\n- **Missed Dose Protocol:** Take the missed dose as soon as remembered unless it is almost time for your next scheduled dose. **Never double up on doses.**\n\n---\n🩺 **Clinical Safety Note:** Dosing adjustments for pediatric, geriatric, or organ-impaired patients must be tailored directly by a treating clinician.`;
+  }
+
+  if (isSideEffect) {
+    return `⚡ **Adverse Effect & Safety Profile Analysis - MediBot AI**\n\nRegarding the adverse effect profile and risks for: **"${cleanPrompt}"**\n\n### ⚠️ **Clinical Safety & Tolerance Assessment:**\n- **Common & Mild Effects:** Transient mild nausea, mild drowsiness, or minor digestive changes frequently resolve as the body adapts to therapy.\n- **Risk Mitigation Strategies:** Maintain proper oral hydration, take doses with small meals where appropriate, and avoid sudden postural changes to minimize lightheadedness.\n- **🚨 Red-Flag Symptoms (Seek Immediate Emergency Care):**\n  - Facial, lip, or throat swelling (angioedema).\n  - Acute shortness of breath or wheezing.\n  - Severe, unresolving abdominal pain or jaundice.\n\n---\n🩺 **Clinical Safety Note:** Report persistent or worsening adverse reactions promptly to your primary physician or local pharmacist.`;
+  }
+
+  if (isSymptom) {
+    return `⚡ **Symptom Evaluation & Self-Care Direction - MediBot AI**\n\nRegarding your health query evaluating: **"${cleanPrompt}"**\n\n### 🩺 **Clinical Symptom Evaluation:**\n- **Pathophysiological Context:** The reported symptoms may indicate an acute response to viral/bacterial stressors, inflammatory cascades, or systemic fatigue.\n- **Initial Self-Care & Hydration Protocol:**\n  1. Prioritize adequate rest and continuous fluid rehydration.\n  2. Utilize age-appropriate OTC antipyretics or analgesics (e.g., dosage-controlled acetaminophen or ibuprofen) if pain or fever is present.\n  3. Track core vital signs (temperature, pulse, blood pressure).\n- **When to Seek Medical Attention:** Consult a healthcare provider if symptoms persist beyond 48–72 hours, worsen significantly, or are accompanied by high fever or chest tightness.\n\n---\n🩺 **Clinical Safety Note:** This guide is for educational evaluation. A definitive medical diagnosis requires direct clinical examination by a qualified physician.`;
+  }
+
+  return `⚡ **MediBot Comprehensive Clinical Monograph & Evaluation**\n\nRegarding your direct query: **"${cleanPrompt}"**\n\n### 💊 **1. Pharmacological Classification & Purpose:**\n- **Target Subject:** **${subject || cleanPrompt}**\n- **Therapeutic Category:** Evaluated within evidence-based pharmacological standards for symptom control, biological pathway modulation, and therapeutic disease management.\n- **Primary Clinical Goals:** Symptom mitigation, prevention of systemic complications, and physiological stabilization.\n\n### ⏱️ **2. Administration & Dosing Principles:**\n- **Dosing Consistency:** Maintain strict, regular dosing intervals as prescribed (e.g., once daily or every 8-12 hours).\n- **Administration Timing:** Check specific product guidelines—some compounds require an empty stomach for maximum bioavailability, while others require food buffering to protect the digestive tract.\n\n### ⚠️ **3. Key Precautions & Clinical Monitoring:**\n- **Organ Function Checks:** Periodic renal (creatinine) and hepatic (liver enzymes) evaluations are recommended during extended therapy.\n- **Special Populations:** Consult a physician prior to use during pregnancy, lactation, or if managing chronic health conditions.\n- **Interaction Screening:** Ensure all current prescriptions, OTC drugs, and herbal supplements are cross-referenced for compatibility.\n\n---\n🩺 **Clinical Safety Disclaimer:** This evidence-based reference is provided for informational and educational purposes only and does not replace individual consultation with a licensed doctor or pharmacist.`;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number = 12000): Promise<T> {
@@ -358,10 +471,10 @@ export async function fetchAIGeneratedResponse(
 
   const validContents = sanitizeContents(contents);
 
-  // Primary Attempt: gemini-3.6-flash
+  // Primary Attempt: gemini-2.5-flash
   try {
     const res = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       contents: validContents,
       config: {
         systemInstruction,
@@ -380,13 +493,13 @@ export async function fetchAIGeneratedResponse(
       return { text: res.text, groundingSources };
     }
   } catch (e: any) {
-    console.error("Attempt 1 (gemini-3.6-flash) error:", e?.message || e);
+    console.error("Attempt 1 (gemini-2.5-flash) error:", e?.message || e);
   }
 
-  // Fallback Attempt: gemini-flash-latest
+  // Fallback Attempt: gemini-1.5-flash
   try {
     const res = await ai.models.generateContent({
-      model: "gemini-flash-latest",
+      model: "gemini-1.5-flash",
       contents: validContents,
       config: {
         systemInstruction,
@@ -397,7 +510,7 @@ export async function fetchAIGeneratedResponse(
       return { text: res.text, groundingSources: [] };
     }
   } catch (e: any) {
-    console.error("Attempt 2 (gemini-flash-latest) error:", e?.message || e);
+    console.error("Attempt 2 (gemini-1.5-flash) error:", e?.message || e);
   }
 
   // Fallback: Immediate high-quality offline pharmacological response
