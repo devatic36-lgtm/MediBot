@@ -1,4 +1,4 @@
-import { fetchAIGeneratedResponse, SYSTEM_INSTRUCTION } from '../src/data/clinicalEngine';
+import { fetchAIGeneratedResponse, SYSTEM_INSTRUCTION, buildGeminiContents } from '../src/data/clinicalEngine';
 
 export default async function handler(req: any, res: any) {
   // CORS headers
@@ -26,20 +26,6 @@ export default async function handler(req: any, res: any) {
       activeSystemInstruction += `\nCRITICAL LANGUAGE MANDATE: The user explicitly communicated in Arabic. Respond fully in fluent, patient-friendly, grammatically flawless Arabic with medical accuracy. Use clear Arabic headings and bullet points.`;
     }
 
-    const contents: any[] = [];
-
-    // History formatting
-    if (Array.isArray(history) && history.length > 0) {
-      const recentHistory = history.slice(-6);
-      for (const msg of recentHistory) {
-        if (msg.sender === 'user') {
-          contents.push({ role: 'user', parts: [{ text: msg.text }] });
-        } else if (msg.sender === 'bot') {
-          contents.push({ role: 'model', parts: [{ text: msg.text }] });
-        }
-      }
-    }
-
     // Current turn
     const currentTurnParts: any[] = [];
     if (imageAttachment) {
@@ -58,7 +44,7 @@ export default async function handler(req: any, res: any) {
     }
 
     currentTurnParts.push({ text: queryPrompt });
-    contents.push({ role: 'user', parts: currentTurnParts });
+    const contents = buildGeminiContents(history, currentTurnParts);
 
     const { text: replyText, groundingSources } = await fetchAIGeneratedResponse(
       contents,

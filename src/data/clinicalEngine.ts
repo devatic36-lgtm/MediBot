@@ -244,6 +244,70 @@ function withTimeout<T>(promise: Promise<T>, ms: number = 12000): Promise<T> {
   ]);
 }
 
+export function sanitizeContents(contents: any[]): any[] {
+  if (!Array.isArray(contents) || contents.length === 0) {
+    return [{ role: 'user', parts: [{ text: 'Hello' }] }];
+  }
+
+  const firstUserIdx = contents.findIndex((c) => c && c.role === 'user');
+  if (firstUserIdx === -1) {
+    return [{ role: 'user', parts: [{ text: 'Hello' }] }];
+  }
+
+  const rawTurns = contents.slice(firstUserIdx);
+  const sanitized: any[] = [];
+
+  for (const turn of rawTurns) {
+    if (!turn || !turn.role || !Array.isArray(turn.parts) || turn.parts.length === 0) {
+      continue;
+    }
+    const role = turn.role === 'user' ? 'user' : 'model';
+
+    if (sanitized.length > 0 && sanitized[sanitized.length - 1].role === role) {
+      sanitized[sanitized.length - 1].parts.push(...turn.parts);
+    } else {
+      sanitized.push({
+        role,
+        parts: [...turn.parts],
+      });
+    }
+  }
+
+  if (sanitized.length === 0) {
+    return [{ role: 'user', parts: [{ text: 'Hello' }] }];
+  }
+
+  return sanitized;
+}
+
+export function buildGeminiContents(history: any[], currentTurnParts: any[]): any[] {
+  const contents: any[] = [];
+
+  if (Array.isArray(history) && history.length > 0) {
+    const firstUserIdx = history.findIndex((m) => m && m.sender === 'user');
+    if (firstUserIdx !== -1) {
+      const validHistory = history.slice(firstUserIdx);
+      for (const msg of validHistory) {
+        if (!msg || !msg.text) continue;
+        const role = msg.sender === 'user' ? 'user' : 'model';
+        if (contents.length > 0 && contents[contents.length - 1].role === role) {
+          contents[contents.length - 1].parts.push({ text: msg.text });
+        } else {
+          contents.push({ role, parts: [{ text: msg.text }] });
+        }
+      }
+    }
+  }
+
+  if (contents.length > 0 && contents[contents.length - 1].role === 'user') {
+    contents[contents.length - 1].parts.push(...currentTurnParts);
+  } else {
+    contents.push({ role: 'user', parts: currentTurnParts });
+  }
+
+  return sanitizeContents(contents);
+}
+
 export async function fetchAIGeneratedResponse(
   contents: any[],
   systemInstruction: string,
@@ -269,12 +333,14 @@ export async function fetchAIGeneratedResponse(
     },
   });
 
+  const validContents = sanitizeContents(contents);
+
   // Attempt 1: gemini-3.6-flash (18s timeout)
   try {
     const res = await withTimeout(
       ai.models.generateContent({
         model: "gemini-3.6-flash",
-        contents,
+        contents: validContents,
         config: {
           systemInstruction,
           temperature: 0.2,
@@ -302,7 +368,7 @@ export async function fetchAIGeneratedResponse(
     const res = await withTimeout(
       ai.models.generateContent({
         model: "gemini-flash-latest",
-        contents,
+        contents: validContents,
         config: {
           systemInstruction,
           temperature: 0.2,

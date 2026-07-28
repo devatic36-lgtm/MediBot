@@ -6,6 +6,7 @@ import {
   fetchAIGeneratedResponse,
   getOfflineClinicalResponse,
   SYSTEM_INSTRUCTION,
+  buildGeminiContents,
 } from "./src/data/clinicalEngine";
 
 dotenv.config();
@@ -49,19 +50,6 @@ app.post("/api/chat", async (req, res) => {
 
     const activeSystemInstruction = SYSTEM_INSTRUCTION + langDirective;
 
-    // Build contents payload
-    const contents: any[] = [];
-
-    // Add previous history turns if provided
-    if (Array.isArray(history) && history.length > 0) {
-      for (const msg of history.slice(-6)) { // Keep last 6 messages for context
-        contents.push({
-          role: msg.sender === "user" ? "user" : "model",
-          parts: [{ text: msg.text }],
-        });
-      }
-    }
-
     // Prepare latest turn parts
     const currentTurnParts: any[] = [];
 
@@ -91,10 +79,7 @@ app.post("/api/chat", async (req, res) => {
 
     currentTurnParts.push({ text: queryText });
 
-    contents.push({
-      role: "user",
-      parts: currentTurnParts,
-    });
+    const contents = buildGeminiContents(history, currentTurnParts);
 
     const { text: replyText, groundingSources } = await fetchAIGeneratedResponse(
       contents,
