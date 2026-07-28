@@ -467,20 +467,30 @@ export async function fetchAIGeneratedResponse(
     };
   }
 
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({
+    apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
+    },
+  });
 
   const validContents = sanitizeContents(contents);
 
-  // Primary Attempt: gemini-2.5-flash
+  // Primary Attempt: gemini-3.6-flash
   try {
-    const res = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: validContents,
-      config: {
-        systemInstruction,
-        temperature: 0.2,
-      },
-    });
+    const res = await withTimeout(
+      ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: validContents,
+        config: {
+          systemInstruction,
+          temperature: 0.2,
+        },
+      }),
+      20000
+    );
     if (res && res.text) {
       const groundingChunks = res.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
       const groundingSources = groundingChunks
@@ -493,24 +503,27 @@ export async function fetchAIGeneratedResponse(
       return { text: res.text, groundingSources };
     }
   } catch (e: any) {
-    console.error("Attempt 1 (gemini-2.5-flash) error:", e?.message || e);
+    console.error("Attempt 1 (gemini-3.6-flash) error:", e?.message || e);
   }
 
-  // Fallback Attempt: gemini-1.5-flash
+  // Fallback Attempt: gemini-flash-latest
   try {
-    const res = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
-      contents: validContents,
-      config: {
-        systemInstruction,
-        temperature: 0.2,
-      },
-    });
+    const res = await withTimeout(
+      ai.models.generateContent({
+        model: "gemini-flash-latest",
+        contents: validContents,
+        config: {
+          systemInstruction,
+          temperature: 0.2,
+        },
+      }),
+      8000
+    );
     if (res && res.text) {
       return { text: res.text, groundingSources: [] };
     }
   } catch (e: any) {
-    console.error("Attempt 2 (gemini-1.5-flash) error:", e?.message || e);
+    console.error("Attempt 2 (gemini-flash-latest) error:", e?.message || e);
   }
 
   // Fallback: Immediate high-quality offline pharmacological response

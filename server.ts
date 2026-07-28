@@ -19,7 +19,7 @@ app.use(express.json({ limit: "20mb" }));
 
 // API Health route
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", bot: "MediBot AI", model: "gemini-2.5-flash" });
+  res.json({ status: "ok", bot: "MediBot AI", model: "gemini-3.6-flash" });
 });
 
 
