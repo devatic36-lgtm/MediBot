@@ -29,6 +29,7 @@ export const PillScannerModal: React.FC<PillScannerModalProps> = ({
   isOpen,
   onClose,
   onAnalyzeImage,
+  language = 'en',
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -155,72 +156,81 @@ export const PillScannerModal: React.FC<PillScannerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
-      <div className="glass-panel-glow rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 relative overflow-hidden max-h-[90vh] flex flex-col justify-between bg-white text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
+      <div className="glass-panel-glow rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-xl border border-slate-200 relative overflow-hidden max-h-[92dvh] flex flex-col justify-between bg-white text-slate-800">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-          <div className="flex items-center space-x-2">
-            <div className="p-2 bg-teal-50 text-teal-700 border border-teal-200 rounded-lg font-bold">
+        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-200 gap-2">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse min-w-0">
+            <div className="p-2 bg-teal-50 text-teal-700 border border-teal-200 rounded-xl font-bold shrink-0">
               <Camera className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">AI Pill & Prescription Photo Identifier</h3>
-              <p className="text-xs text-slate-500">Upload a pill photo or Rx label for instant vision verification</p>
+            <div className="min-w-0">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                {language === 'ar' ? 'الماسح الضوئي لأقراص الدواء' : 'AI Pill Photo Identifier'}
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-500 truncate">
+                {language === 'ar' ? 'قم برفع صورة الدواء للتحليل بالرؤية الحاسوبية' : 'Upload a pill photo or Rx label for instant vision verification'}
+              </p>
             </div>
           </div>
           <button
+            type="button"
             onClick={() => (stopCamera(), onClose())}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition shrink-0 min-h-[38px] min-w-[38px] flex items-center justify-center"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="py-4 overflow-y-auto space-y-4">
+        <div className="py-3 sm:py-4 overflow-y-auto space-y-3 sm:space-y-4">
           {/* Camera View / Image Preview / Dropzone */}
           {isCameraActive ? (
             <div className="relative rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center">
               <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
               <button
+                type="button"
                 onClick={capturePhoto}
-                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-5 py-2 bg-teal-600 text-white font-bold rounded-full text-xs shadow-lg hover:bg-teal-700 flex items-center space-x-1.5"
+                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-5 py-2.5 bg-teal-600 text-white font-bold rounded-full text-xs shadow-lg hover:bg-teal-700 flex items-center space-x-1.5 min-h-[44px] touch-manipulation"
               >
                 <Camera className="w-4 h-4" />
-                <span>Snap Photo</span>
+                <span>{language === 'ar' ? 'التقاط الصورة' : 'Snap Photo'}</span>
               </button>
             </div>
           ) : selectedImage ? (
-            <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-64 flex items-center justify-center">
-              <img src={selectedImage} alt="Pill preview" className="max-h-64 object-contain" />
+            <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-56 sm:max-h-64 flex items-center justify-center">
+              <img src={selectedImage} alt="Pill preview" className="max-h-56 sm:max-h-64 object-contain" />
               <button
+                type="button"
                 onClick={() => setSelectedImage(null)}
-                className="absolute top-2 right-2 p-1.5 bg-slate-900/80 text-white hover:bg-rose-600 rounded-full transition"
+                className="absolute top-2 right-2 p-2 bg-slate-900/80 text-white hover:bg-rose-600 rounded-full transition min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="Change Image"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           ) : (
-            <div className="border border-dashed border-teal-200 rounded-2xl p-8 text-center bg-teal-50/30 hover:bg-teal-50/60 transition">
-              <ImageIcon className="w-10 h-10 text-teal-600 mx-auto mb-2" />
-              <p className="text-sm font-bold text-slate-800">Upload a photo of your pill or bottle label</p>
-              <p className="text-xs text-slate-500 mt-1 mb-4">PNG, JPG, WEBP formats up to 10MB</p>
+            <div className="border border-dashed border-teal-200 rounded-2xl p-5 sm:p-8 text-center bg-teal-50/30 hover:bg-teal-50/60 transition">
+              <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 text-teal-600 mx-auto mb-2" />
+              <p className="text-xs sm:text-sm font-bold text-slate-800">
+                {language === 'ar' ? 'اختر أو التقط صورة لقرص الدواء أو العبوة' : 'Upload a photo of your pill or bottle label'}
+              </p>
+              <p className="text-[11px] text-slate-500 mt-0.5 mb-3">PNG, JPG, WEBP up to 10MB</p>
 
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <label className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-bold rounded-xl cursor-pointer shadow-xs inline-flex items-center space-x-1.5">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                <label className="px-3.5 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-bold rounded-xl cursor-pointer shadow-xs inline-flex items-center space-x-1.5 min-h-[44px] touch-manipulation">
                   <Upload className="w-4 h-4 text-teal-600" />
-                  <span>Choose File</span>
+                  <span>{language === 'ar' ? 'تصفح الملفات' : 'Choose File'}</span>
                   <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                 </label>
 
                 <button
                   type="button"
                   onClick={startCamera}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs inline-flex items-center space-x-1.5"
+                  className="px-3.5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs inline-flex items-center space-x-1.5 min-h-[44px] touch-manipulation"
                 >
                   <Camera className="w-4 h-4" />
-                  <span>Use Camera</span>
+                  <span>{language === 'ar' ? 'استخدام الكاميرا' : 'Use Camera'}</span>
                 </button>
               </div>
             </div>
@@ -253,24 +263,26 @@ export const PillScannerModal: React.FC<PillScannerModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="pt-4 border-t border-slate-200 flex justify-end space-x-2">
+        <div className="pt-3 border-t border-slate-200 flex justify-end space-x-2 rtl:space-x-reverse">
           <button
+            type="button"
             onClick={() => (stopCamera(), onClose())}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+            className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl min-h-[42px] touch-manipulation"
           >
-            Cancel
+            {language === 'ar' ? 'إلغاء' : 'Cancel'}
           </button>
           <button
+            type="button"
             onClick={handleAnalyze}
             disabled={!selectedImage}
-            className={`px-5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-xs ${
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 rtl:space-x-reverse shadow-xs min-h-[42px] touch-manipulation ${
               selectedImage
-                ? 'bg-teal-600 hover:bg-teal-700 text-white font-extrabold shadow-sm'
+                ? 'bg-teal-600 hover:bg-teal-700 text-white font-extrabold shadow-sm active:scale-95'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Analyze with MediBot</span>
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>{language === 'ar' ? 'تحليل بواسطة MediBot' : 'Analyze with MediBot'}</span>
           </button>
         </div>
       </div>

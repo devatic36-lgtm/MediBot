@@ -13,26 +13,27 @@ export const SafetyDisclaimerModal: React.FC<SafetyDisclaimerModalProps> = ({ is
   const isAr = language === 'ar';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
-      <div className="glass-panel-glow rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 relative bg-white text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
+      <div className="glass-panel-glow rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-xl border border-slate-200 relative bg-white text-slate-800 max-h-[92dvh] flex flex-col justify-between">
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition"
+          className="absolute top-3 right-3 rtl:right-auto rtl:left-3 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition min-h-[38px] min-w-[38px] flex items-center justify-center"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center space-x-3 rtl:space-x-reverse mb-4">
-          <div className="p-3 bg-teal-50 text-teal-700 border border-teal-200 rounded-xl font-bold">
-            <ShieldCheck className="w-6 h-6" />
+        <div className="flex items-center space-x-2.5 rtl:space-x-reverse mb-3 pr-8 rtl:pr-0 rtl:pl-8">
+          <div className="p-2.5 bg-teal-50 text-teal-700 border border-teal-200 rounded-xl font-bold shrink-0">
+            <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-slate-900">{isAr ? 'معايير السلامة والإرشادات السريرية' : 'Clinical & Safety Standards'}</h3>
-            <p className="text-xs text-slate-500">{isAr ? 'سياسة وإرشادات MediBot AI' : 'MediBot AI Policy & Guidelines'}</p>
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate">{isAr ? 'معايير السلامة والإرشادات السريرية' : 'Clinical & Safety Standards'}</h3>
+            <p className="text-[11px] sm:text-xs text-slate-500 truncate">{isAr ? 'سياسة وإرشادات MediBot AI' : 'MediBot AI Policy & Guidelines'}</p>
           </div>
         </div>
 
-        <div className="space-y-3 text-xs text-slate-600 leading-relaxed mb-6 max-h-[60vh] overflow-y-auto pr-1">
+        <div className="space-y-3 text-xs text-slate-600 leading-relaxed mb-4 overflow-y-auto pr-1">
           <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-900 font-medium">
             <div className="flex items-center space-x-2 rtl:space-x-reverse font-bold mb-1 text-rose-800">
               <Phone className="w-4 h-4 text-rose-600 shrink-0" />
@@ -67,8 +68,9 @@ export const SafetyDisclaimerModal: React.FC<SafetyDisclaimerModalProps> = ({ is
 
         <div className="pt-3 border-t border-slate-200 flex justify-end">
           <button
+            type="button"
             onClick={onClose}
-            className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+            className="w-full sm:w-auto px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition min-h-[44px] touch-manipulation active:scale-98"
           >
             {isAr ? 'أفهم وأوافق' : 'I Understand & Agree'}
           </button>

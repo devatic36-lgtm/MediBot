@@ -70,39 +70,40 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onRate }) => 
 
   return (
     <div
-      className={`py-5 px-5 sm:px-6 rounded-2xl transition-all ${
+      className={`p-3.5 sm:p-5 rounded-2xl transition-all ${
         isUser
           ? 'bg-slate-900 text-white ml-auto max-w-3xl border border-slate-800 shadow-md'
           : 'glass-panel max-w-4xl border border-slate-200 text-slate-800 shadow-xs'
       }`}
     >
-      <div className="flex items-start space-x-3 sm:space-x-4">
+      <div className="flex items-start space-x-2.5 sm:space-x-4 rtl:space-x-reverse">
         {/* Avatar */}
         <div
-          className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-bold shadow-xs ${
+          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 font-bold shadow-xs ${
             isUser
               ? 'bg-slate-800 text-teal-400 border border-slate-700'
               : 'bg-teal-600 text-white font-black shadow-xs'
           }`}
         >
-          {isUser ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5 stroke-[2.5]" />}
+          {isUser ? <User className="w-4 h-4 sm:w-5 sm:h-5" /> : <Bot className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />}
         </div>
 
         {/* Message Content Container */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <span className={`text-sm font-bold ${isUser ? 'text-white' : 'text-slate-900'}`}>
+          <div className="flex items-center justify-between mb-1.5 gap-2">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 rtl:space-x-reverse min-w-0">
+              <span className={`text-xs sm:text-sm font-bold truncate ${isUser ? 'text-white' : 'text-slate-900'}`}>
                 {isUser ? 'You' : 'MediBot Clinical AI'}
               </span>
               {!isUser && (
-                <span className="inline-flex items-center space-x-1 bg-teal-50 text-teal-700 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border border-teal-200">
+                <span className="inline-flex items-center space-x-1 bg-teal-50 text-teal-700 text-[9px] sm:text-[10px] font-mono font-semibold px-1.5 sm:px-2 py-0.5 rounded-full border border-teal-200 shrink-0">
                   <Sparkles className="w-2.5 h-2.5 text-teal-600" />
-                  <span>Verified Evidence</span>
+                  <span className="hidden xs:inline">Verified Evidence</span>
+                  <span className="xs:hidden">Verified</span>
                 </span>
               )}
             </div>
-            <div className="flex items-center space-x-1.5 text-[11px] text-slate-400 font-mono">
+            <div className="flex items-center space-x-1 text-[10px] sm:text-[11px] text-slate-400 font-mono shrink-0">
               <Clock className="w-3 h-3 text-slate-400" />
               <span>{message.timestamp}</span>
             </div>

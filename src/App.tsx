@@ -306,56 +306,58 @@ How can I help you today? You can ask me about:
       />
 
       {/* Main Body */}
-      <main className="flex-1 flex flex-col max-w-5xl w-full mx-auto p-3 sm:p-5 md:p-6 overflow-hidden">
-        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[500px]">
+      <main className="flex-1 flex flex-col max-w-5xl w-full mx-auto p-2 sm:p-4 md:p-6 overflow-hidden">
+        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden min-h-[480px]">
           {/* Chat Top Sub-header */}
-          <div className="bg-slate-100/70 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse shadow-sm" />
-              <span className="text-xs font-mono font-bold text-teal-800">
-                {isAr ? 'نظام MediBot الذكي نشط' : 'MediBot AI Engine Active'}
+          <div className="bg-slate-100/80 px-3 sm:px-4 py-2.5 border-b border-slate-200 flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 rtl:space-x-reverse min-w-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse shadow-xs shrink-0" />
+              <span className="text-[11px] sm:text-xs font-mono font-bold text-teal-800 truncate">
+                {isAr ? 'MediBot AI نشط' : 'MediBot AI Active'}
               </span>
-              <span className="text-xs text-slate-500 hidden sm:inline">
+              <span className="text-xs text-slate-500 hidden md:inline truncate">
                 | {isAr ? 'معلومات صيدلانية ودلائل إرشادية معتمدة' : 'Evidence-Based Pharmacology & FDA Guidelines'}
               </span>
             </div>
 
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 rtl:space-x-reverse shrink-0">
               <button
+                type="button"
                 onClick={() => setIsPillModalOpen(true)}
-                className="px-3 py-1.5 bg-teal-50 border border-teal-200 text-teal-700 hover:bg-teal-100 text-xs font-bold rounded-xl transition flex items-center space-x-1 rtl:space-x-reverse"
+                className="px-2.5 py-1.5 sm:px-3 bg-teal-50 border border-teal-200 text-teal-700 hover:bg-teal-100 active:scale-95 text-xs font-bold rounded-xl transition flex items-center space-x-1 rtl:space-x-reverse min-h-[34px] touch-manipulation"
               >
-                <Camera className="w-3.5 h-3.5" />
-                <span>{isAr ? 'ماسح الأدوية' : 'Pill Scanner'}</span>
+                <Camera className="w-3.5 h-3.5 shrink-0" />
+                <span className="text-[11px] sm:text-xs">{isAr ? 'الماسح الضوئي' : 'Pill Scanner'}</span>
               </button>
 
               <button
+                type="button"
                 onClick={clearChatHistory}
-                className="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded transition"
+                className="text-[11px] sm:text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded transition min-h-[34px] flex items-center"
                 title={isAr ? 'مسح المحادثة' : 'Clear chat session'}
               >
-                {isAr ? 'مسح المحادثة' : 'Clear Session'}
+                {isAr ? 'مسح' : 'Clear'}
               </button>
             </div>
           </div>
 
           {/* Chat Scroll Area */}
-          <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 max-h-[calc(100vh-270px)]">
+          <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3.5 max-h-[calc(100dvh-250px)]">
             {messages.map((msg) => (
               <ChatMessage key={msg.id} message={msg} onRate={handleRateMessage} />
             ))}
 
             {isLoading && (
-              <div className="py-4 px-4 bg-white max-w-2xl border border-teal-200 rounded-2xl shadow-xs flex items-center space-x-3 rtl:space-x-reverse">
-                <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 border border-teal-200 flex items-center justify-center animate-bounce">
-                  <Pill className="w-5 h-5" />
+              <div className="py-3 px-3.5 bg-white max-w-2xl border border-teal-200 rounded-2xl shadow-xs flex items-center space-x-3 rtl:space-x-reverse">
+                <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 border border-teal-200 flex items-center justify-center animate-bounce shrink-0">
+                  <Pill className="w-4 h-4" />
                 </div>
-                <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-teal-700 font-medium">
-                  <RefreshCw className="w-4 h-4 animate-spin text-teal-600" />
+                <div className="flex items-center space-x-2 rtl:space-x-reverse text-xs sm:text-sm text-teal-700 font-medium">
+                  <RefreshCw className="w-4 h-4 animate-spin text-teal-600 shrink-0" />
                   <span>
                     {isAr
-                      ? 'جاري تحليل القواعد المرجعية والأدلة الطبية والصيدلانية...'
-                      : 'Analyzing clinical reference databases & drug safety guidelines...'}
+                      ? 'جاري تحليل القواعد المرجعية والأدلة الطبية الصيدلانية...'
+                      : 'Analyzing clinical databases & drug safety guidelines...'}
                   </span>
                 </div>
               </div>
@@ -366,19 +368,20 @@ How can I help you today? You can ask me about:
 
           {/* Quick Preset Prompts when chat is short */}
           {messages.length <= 2 && (
-            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200">
-              <span className="text-xs font-mono font-bold text-slate-500 block mb-2">
+            <div className="px-3 sm:px-4 py-2.5 bg-slate-50 border-t border-slate-200">
+              <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-500 block mb-1.5">
                 {isAr ? 'أسئلة شائعة سريعة:' : 'Quick Clinical Queries:'}
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2">
                 {PRESET_PROMPTS_LOCALIZED.map((item, idx) => (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => handleSendMessage(item.prompt)}
-                    className="p-2.5 bg-white border border-slate-200 hover:border-teal-400 rounded-xl text-left rtl:text-right text-xs transition hover:bg-teal-50/30 group"
+                    className="p-2 sm:p-2.5 bg-white border border-slate-200 hover:border-teal-400 active:scale-98 rounded-xl text-left rtl:text-right text-xs transition hover:bg-teal-50/30 group min-h-[44px] touch-manipulation flex flex-col justify-center"
                   >
-                    <span className="font-bold text-slate-800 block group-hover:text-teal-700">{item.title}</span>
-                    <span className="text-[11px] text-slate-500 line-clamp-1">{item.prompt}</span>
+                    <span className="font-bold text-slate-800 block text-[11px] sm:text-xs group-hover:text-teal-700 leading-tight">{item.title}</span>
+                    <span className="text-[10px] sm:text-[11px] text-slate-500 truncate block mt-0.5">{item.prompt}</span>
                   </button>
                 ))}
               </div>
@@ -387,16 +390,17 @@ How can I help you today? You can ask me about:
 
           {/* Image Preview attachment badge */}
           {imageAttachment && (
-            <div className="px-4 py-2 bg-teal-50 text-slate-800 flex items-center justify-between text-xs border-t border-teal-200">
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <img src={imageAttachment} alt="Attached pill preview" className="w-8 h-8 object-cover rounded border border-teal-300" />
-                <span className="text-teal-800 font-semibold">
-                  {isAr ? 'تم إرفاق صورة الدواء (جاهزة للتحليل والرأي الطبي)' : 'Photo Attached (Pill / Label Analysis Ready)'}
+            <div className="px-3 py-2 bg-teal-50 text-slate-800 flex items-center justify-between text-xs border-t border-teal-200 gap-2">
+              <div className="flex items-center space-x-2 rtl:space-x-reverse min-w-0">
+                <img src={imageAttachment} alt="Attached pill preview" className="w-7 h-7 object-cover rounded border border-teal-300 shrink-0" />
+                <span className="text-teal-800 font-semibold text-[11px] sm:text-xs truncate">
+                  {isAr ? 'تم إرفاق صورة الدواء' : 'Photo Attached'}
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => setImageAttachment(null)}
-                className="p-1 hover:bg-teal-100 rounded text-slate-500 hover:text-slate-800"
+                className="p-1 hover:bg-teal-100 rounded text-slate-500 hover:text-slate-800 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -404,45 +408,45 @@ How can I help you today? You can ask me about:
           )}
 
           {/* Chat Input Bar */}
-          <div className="p-3 sm:p-4 bg-slate-50 border-t border-slate-200">
+          <div className="p-2.5 sm:p-4 bg-slate-50 border-t border-slate-200">
             {/* Recording active badge */}
             {isListening && (
               <div className="mb-2 px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold flex items-center justify-between animate-pulse">
-                <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                  <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
-                  <span>
+                <div className="flex items-center space-x-2 rtl:space-x-reverse min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping shrink-0" />
+                  <span className="truncate text-[11px] sm:text-xs">
                     {isAr
-                      ? '🎙️ جاري الاستماع للإملاء الصوتي باللغة العربية... انطق سؤالك الآن'
-                      : '🎙️ Listening to voice dictation in English... Speak your question now'}
+                      ? '🎙️ جاري الاستماع للإملاء الصوتي بالعربية...'
+                      : '🎙️ Listening to voice dictation in English...'}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={toggleSpeechToText}
-                  className="text-[11px] underline text-rose-800 font-semibold"
+                  className="text-[11px] underline text-rose-800 font-bold shrink-0 ml-2 rtl:mr-2"
                 >
-                  {isAr ? 'إيقاف التسجيل' : 'Stop'}
+                  {isAr ? 'إيقاف' : 'Stop'}
                 </button>
               </div>
             )}
 
             {/* Input + Action buttons */}
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 rtl:space-x-reverse">
               <button
                 type="button"
                 onClick={() => setIsPillModalOpen(true)}
-                className="p-3 text-teal-700 bg-white border border-slate-200 hover:border-teal-400 hover:bg-teal-50 rounded-2xl transition"
+                className="p-2.5 sm:p-3 text-teal-700 bg-white border border-slate-200 hover:border-teal-400 hover:bg-teal-50 rounded-xl sm:rounded-2xl transition shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
                 title={isAr ? 'رفع صورة قرص دواء' : 'Upload pill photo'}
               >
-                <Paperclip className="w-5 h-5" />
+                <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               <button
                 type="button"
                 onClick={toggleSpeechToText}
-                className={`p-3 rounded-2xl transition border flex items-center justify-center shrink-0 ${
+                className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition border flex items-center justify-center shrink-0 min-h-[44px] min-w-[44px] touch-manipulation ${
                   isListening
-                    ? 'bg-rose-500 text-white border-rose-600 ring-4 ring-rose-200 shadow-md'
+                    ? 'bg-rose-500 text-white border-rose-600 ring-2 ring-rose-200 shadow-sm'
                     : 'bg-white text-teal-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50'
                 }`}
                 title={
@@ -451,7 +455,7 @@ How can I help you today? You can ask me about:
                     : (isAr ? 'الإملاء الصوتي (بالعربية / الإنجليزية)' : 'Voice input dictation (Arabic / English)')
                 }
               >
-                {isListening ? <MicOff className="w-5 h-5 animate-spin" /> : <Mic className="w-5 h-5" />}
+                {isListening ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
 
               <input
@@ -463,23 +467,23 @@ How can I help you today? You can ask me about:
                   isListening
                     ? (isAr ? 'جاري تحويل صوتك إلى نص...' : 'Converting speech to text...')
                     : (isAr
-                      ? 'اسأل MediBot عن أي دواء، أو انقر على المايك للإملاء الصوتي...'
-                      : 'Ask MediBot or click the mic for voice dictation...')
+                      ? 'اسأل MediBot أو انقر للمايك...'
+                      : 'Ask MediBot or click mic...')
                 }
-                className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                className="flex-1 min-w-0 px-3 py-2.5 sm:px-4 sm:py-3 bg-white border border-slate-200 rounded-xl sm:rounded-2xl text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 min-h-[44px]"
               />
 
               <button
                 type="button"
                 onClick={() => handleSendMessage()}
                 disabled={isLoading || (!input.trim() && !imageAttachment)}
-                className={`px-5 py-3 rounded-2xl font-extrabold text-sm flex items-center space-x-2 rtl:space-x-reverse transition shadow-xs ${
+                className={`px-3 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center space-x-1.5 rtl:space-x-reverse transition shadow-xs shrink-0 min-h-[44px] touch-manipulation ${
                   isLoading || (!input.trim() && !imageAttachment)
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-200'
-                    : 'bg-teal-600 hover:bg-teal-700 text-white shadow-xs'
+                    : 'bg-teal-600 hover:bg-teal-700 text-white shadow-xs active:scale-95'
                 }`}
               >
-                <span>{isAr ? 'إرسال' : 'Ask'}</span>
+                <span className="hidden sm:inline">{isAr ? 'إرسال' : 'Ask'}</span>
                 <Send className="w-4 h-4 stroke-[2.5] rtl:rotate-180" />
               </button>
             </div>
