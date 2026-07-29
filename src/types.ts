@@ -18,12 +18,23 @@ export interface Message {
 export interface MedicationQuickRef {
   id: string;
   name: string;
+  nameAr?: string;
   brandNames: string[];
   class: string;
+  classAr?: string;
+  categoryKey: string;
   primaryUse: string;
+  primaryUseAr?: string;
   typicalDosage: string;
+  typicalDosageAr?: string;
   keyWarnings: string;
+  keyWarningsAr?: string;
   commonSideEffects: string[];
+  commonSideEffectsAr?: string[];
+  form?: string;
+  formAr?: string;
+  type?: 'Rx' | 'OTC';
+  pillColor?: string;
 }
 
 export interface SavedMedication {

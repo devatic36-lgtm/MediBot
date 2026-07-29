@@ -23,6 +23,7 @@ interface ChatMessageProps {
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onRate }) => {
   const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechRate, setSpeechRate] = useState<number>(1.0);
 
   const isUser = message.sender === 'user';
 
@@ -32,14 +33,18 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onRate }) => 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSpeech = () => {
+  const handleSpeech = (rateOverride?: number) => {
     if (!('speechSynthesis' in window)) return;
 
-    if (isSpeaking) {
+    const rateToUse = rateOverride !== undefined ? rateOverride : speechRate;
+
+    if (isSpeaking && rateOverride === undefined) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
     }
+
+    window.speechSynthesis.cancel(); // cancel any previous utterance
 
     const cleanText = message.text.replace(/[*#_`~]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
@@ -59,13 +64,23 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onRate }) => 
       }
     }
 
-    utterance.rate = 0.95;
+    utterance.rate = rateToUse;
     utterance.pitch = 1.0;
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
     setIsSpeaking(true);
+  };
+
+  const cycleRate = () => {
+    const rates = [0.75, 1.0, 1.25];
+    const currentIndex = rates.indexOf(speechRate);
+    const nextRate = rates[(currentIndex + 1) % rates.length];
+    setSpeechRate(nextRate);
+    if (isSpeaking) {
+      handleSpeech(nextRate);
+    }
   };
 
   return (
@@ -167,16 +182,41 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onRate }) => 
                   <span>{copied ? 'Copied' : 'Copy'}</span>
                 </button>
 
-                <button
-                  onClick={handleSpeech}
-                  className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg transition ${
-                    isSpeaking ? 'bg-teal-100 text-teal-800 font-semibold border border-teal-200' : 'hover:bg-slate-100 text-slate-600'
-                  }`}
-                  title="Listen to audio response"
-                >
-                  {isSpeaking ? <VolumeX className="w-3.5 h-3.5 text-teal-600" /> : <Volume2 className="w-3.5 h-3.5 text-slate-400" />}
-                  <span>{isSpeaking ? 'Stop Voice' : 'Read Aloud'}</span>
-                </button>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handleSpeech()}
+                    className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg transition ${
+                      isSpeaking ? 'bg-teal-600 text-white font-semibold shadow-2xs' : 'hover:bg-slate-100 text-slate-600'
+                    }`}
+                    title="Listen to audio response"
+                  >
+                    {isSpeaking ? (
+                      <>
+                        <VolumeX className="w-3.5 h-3.5" />
+                        <span>Stop Voice</span>
+                        <span className="flex items-center space-x-0.5 ml-1">
+                          <span className="w-1 h-2 bg-white animate-pulse rounded-full" />
+                          <span className="w-1 h-3 bg-white animate-bounce rounded-full" />
+                          <span className="w-1 h-1.5 bg-white animate-pulse rounded-full" />
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Read Aloud</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={cycleRate}
+                    className="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-[10px] font-mono font-bold text-slate-700 border border-slate-200"
+                    title="Toggle Text-to-Speech Speed"
+                  >
+                    {speechRate}x
+                  </button>
+                </div>
               </div>
 
               {/* Feedback buttons */}
