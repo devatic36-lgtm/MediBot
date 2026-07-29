@@ -150,36 +150,57 @@ export const MediBase: React.FC<MediBaseProps> = ({
       </div>
 
       {/* 2. Controls & Search Row */}
-      <div className="space-y-4 mb-6">
+      <div className="space-y-3 sm:space-y-4 mb-5 sm:mb-6">
         {/* Search input bar */}
         <div className="relative">
-          <Search className="w-5 h-5 text-teal-600 absolute left-4 rtl:left-auto rtl:right-4 top-3.5 pointer-events-none" />
+          <Search className="w-5 h-5 text-teal-600 absolute left-3.5 rtl:left-auto rtl:right-3.5 top-3.5 pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={
               isAr
-                ? 'ابحث بالاسم التجاري، الاسم العلمي، الجرعة، أو دواعي الاستعمال (مثال: بندول، Lipitor، سكري، روماتيزم)...'
-                : 'Search by generic name, brand name, condition or class (e.g. Paracetamol, Lipitor, Diabetes, Advil)...'
+                ? 'ابحث بالاسم، العلاج، الجرعة، أو الفئة...'
+                : 'Search generic/brand name, use, or class (e.g. Lipitor, Advil, Diabetes)...'
             }
-            className="w-full pl-11 pr-4 rtl:pl-4 rtl:pr-11 py-3 bg-white border border-slate-300 rounded-2xl text-sm text-slate-900 placeholder:text-slate-400 shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+            className="w-full pl-10 pr-10 rtl:pl-10 rtl:pr-10 py-3 bg-white border border-slate-300 rounded-2xl text-sm text-slate-900 placeholder:text-slate-400 shadow-2xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition touch-manipulation min-h-[44px]"
           />
           {searchTerm && (
             <button
               type="button"
               onClick={() => setSearchTerm('')}
-              className="absolute right-3.5 rtl:right-auto rtl:left-3.5 top-3.5 text-slate-400 hover:text-slate-700 p-0.5 rounded-full"
+              className="absolute right-3 rtl:right-auto rtl:left-3 top-3 text-slate-400 hover:text-slate-700 p-1 rounded-full min-h-[36px] min-w-[36px] flex items-center justify-center touch-manipulation"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Rx/OTC Filter Bar + Count */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
-          {/* Category Filters Chips */}
-          <div className="flex items-center space-x-1.5 rtl:space-x-reverse overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs">
+        {/* Rx/OTC & Category Filter Container */}
+        <div className="bg-white p-2.5 sm:p-3 rounded-2xl border border-slate-200 shadow-2xs space-y-2.5 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-3">
+          {/* Mobile Category Select Dropdown (Visible on small screens) */}
+          <div className="block sm:hidden relative">
+            <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1">
+              {isAr ? 'التصنيف الطبي:' : 'Filter Category:'}
+            </label>
+            <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 shadow-2xs focus:ring-2 focus:ring-teal-500 appearance-none min-h-[42px] touch-manipulation pr-8 rtl:pr-3 rtl:pl-8"
+              >
+                {categories.map((cat) => (
+                  <option key={cat.key} value={cat.key}>
+                    {isAr ? cat.labelAr : cat.labelEn}
+                  </option>
+                ))}
+              </select>
+              <Filter className="w-4 h-4 text-slate-500 absolute right-3 rtl:right-auto rtl:left-3 top-3 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Horizontal Category Scroll Chips */}
+          <div className="hidden sm:flex items-center space-x-1.5 rtl:space-x-reverse overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none text-xs touch-pan-x">
             {categories.map((cat) => {
               const isActive = selectedCategory === cat.key;
               return (
@@ -187,7 +208,7 @@ export const MediBase: React.FC<MediBaseProps> = ({
                   key={cat.key}
                   type="button"
                   onClick={() => setSelectedCategory(cat.key)}
-                  className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition min-h-[36px] flex items-center space-x-1 rtl:space-x-reverse ${
+                  className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition min-h-[38px] flex items-center space-x-1 rtl:space-x-reverse touch-manipulation ${
                     isActive
                       ? 'bg-teal-600 text-white shadow-xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 border border-slate-200/60'
@@ -199,12 +220,12 @@ export const MediBase: React.FC<MediBaseProps> = ({
             })}
           </div>
 
-          {/* Rx vs OTC Segment control */}
-          <div className="flex items-center space-x-1 rtl:space-x-reverse shrink-0 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+          {/* Rx vs OTC Segment Control */}
+          <div className="flex items-center space-x-1 rtl:space-x-reverse shrink-0 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs w-full sm:w-auto justify-between sm:justify-start">
             <button
               type="button"
               onClick={() => setSelectedType('ALL')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg font-bold transition min-h-[36px] touch-manipulation ${
                 selectedType === 'ALL' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -213,7 +234,7 @@ export const MediBase: React.FC<MediBaseProps> = ({
             <button
               type="button"
               onClick={() => setSelectedType('Rx')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg font-bold transition min-h-[36px] touch-manipulation ${
                 selectedType === 'Rx' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -222,7 +243,7 @@ export const MediBase: React.FC<MediBaseProps> = ({
             <button
               type="button"
               onClick={() => setSelectedType('OTC')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg font-bold transition min-h-[36px] touch-manipulation ${
                 selectedType === 'OTC' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -352,24 +373,24 @@ export const MediBase: React.FC<MediBaseProps> = ({
               </div>
 
               {/* Card Footer Actions */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-1.5 flex-wrap">
-                <div className="flex items-center space-x-1 rtl:space-x-reverse">
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center space-x-1 rtl:space-x-reverse shrink-0">
                   <button
                     type="button"
                     onClick={() => setSelectedMedForModal(med)}
-                    className="px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-teal-700 hover:bg-teal-50 rounded-xl transition inline-flex items-center space-x-1 rtl:space-x-reverse min-h-[36px]"
+                    className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-teal-700 hover:bg-teal-50 rounded-xl transition inline-flex items-center space-x-1 rtl:space-x-reverse min-h-[38px] touch-manipulation active:scale-95"
                   >
-                    <Info className="w-3.5 h-3.5 text-slate-400" />
+                    <Info className="w-3.5 h-3.5 text-slate-500" />
                     <span>{isAr ? 'الدليل' : 'Monograph'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleSpeakMonograph(med)}
-                    className={`p-2 rounded-xl text-xs font-medium transition min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                    className={`p-2 rounded-xl text-xs font-medium transition min-h-[38px] min-w-[38px] flex items-center justify-center touch-manipulation active:scale-95 ${
                       speakingMedId === med.id
                         ? 'bg-teal-600 text-white shadow-2xs'
-                        : 'text-slate-500 hover:bg-slate-100 hover:text-teal-700'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-teal-700 border border-slate-200/60'
                     }`}
                     title={isAr ? 'استمع للمعلومات' : 'Listen monograph'}
                   >
@@ -387,10 +408,10 @@ export const MediBase: React.FC<MediBaseProps> = ({
                         : `I'd like to discuss the medication "${med.name}" (${med.brandNames.join(', ')}). Please provide a full clinical summary of indications, dosage, and warnings.`
                     )
                   }
-                  className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold rounded-xl text-xs inline-flex items-center space-x-1.5 rtl:space-x-reverse shadow-xs transition min-h-[36px] touch-manipulation"
+                  className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold rounded-xl text-xs inline-flex items-center justify-center space-x-1.5 rtl:space-x-reverse shadow-xs transition min-h-[38px] touch-manipulation flex-1 sm:flex-none"
                 >
-                  <MessageSquarePlus className="w-3.5 h-3.5" />
-                  <span>{isAr ? 'أضف للمحادثة' : 'Add to Chat'}</span>
+                  <MessageSquarePlus className="w-3.5 h-3.5 shrink-0" />
+                  <span className="whitespace-nowrap">{isAr ? 'أضف للمحادثة' : 'Add to Chat'}</span>
                 </button>
               </div>
             </div>
@@ -513,14 +534,14 @@ export const MediBase: React.FC<MediBaseProps> = ({
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+            <div className="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex items-center space-x-2 rtl:space-x-reverse justify-between sm:justify-start w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => {
                     if (selectedMedForModal) handleSpeakMonograph(selectedMedForModal);
                   }}
-                  className={`px-3 py-2 text-xs font-semibold rounded-xl border transition inline-flex items-center space-x-1.5 rtl:space-x-reverse min-h-[40px] ${
+                  className={`flex-1 sm:flex-none px-3.5 py-2.5 text-xs font-semibold rounded-xl border transition inline-flex items-center justify-center space-x-1.5 rtl:space-x-reverse min-h-[42px] touch-manipulation active:scale-95 ${
                     speakingMedId === selectedMedForModal.id
                       ? 'bg-teal-600 text-white border-teal-600 shadow-2xs'
                       : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
@@ -528,12 +549,12 @@ export const MediBase: React.FC<MediBaseProps> = ({
                 >
                   {speakingMedId === selectedMedForModal.id ? (
                     <>
-                      <VolumeX className="w-4 h-4 animate-pulse" />
+                      <VolumeX className="w-4 h-4 animate-pulse shrink-0" />
                       <span>{isAr ? 'إيقاف الصوت' : 'Stop Audio'}</span>
                     </>
                   ) : (
                     <>
-                      <Volume2 className="w-4 h-4 text-teal-600" />
+                      <Volume2 className="w-4 h-4 text-teal-600 shrink-0" />
                       <span>{isAr ? 'استمع للدليل' : 'Listen Monograph'}</span>
                     </>
                   )}
@@ -546,7 +567,7 @@ export const MediBase: React.FC<MediBaseProps> = ({
                     setSpeakingMedId(null);
                     setSelectedMedForModal(null);
                   }}
-                  className="px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl min-h-[40px]"
+                  className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl min-h-[42px] touch-manipulation active:scale-95 border border-slate-200 sm:border-transparent"
                 >
                   {isAr ? 'إغلاق' : 'Close'}
                 </button>
@@ -566,9 +587,9 @@ export const MediBase: React.FC<MediBaseProps> = ({
                       : `I'd like to discuss "${med.name}" with MediBot AI.`
                   );
                 }}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs inline-flex items-center space-x-1.5 rtl:space-x-reverse shadow-xs min-h-[40px] touch-manipulation active:scale-95"
+                className="w-full sm:w-auto px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs inline-flex items-center justify-center space-x-1.5 rtl:space-x-reverse shadow-xs min-h-[42px] touch-manipulation active:scale-95"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 shrink-0" />
                 <span>{isAr ? 'تحدث مع AI حول الدواء' : 'Ask MediBot AI'}</span>
               </button>
             </div>
